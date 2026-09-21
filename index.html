@@ -5,24 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Morning Brief</title>
 <meta name="description" content="Daily morning brief and tech news library.">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#0b0b0c">
 <link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Questrial&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <div class="app">
-  <header class="app-header">
-    <div class="app-header-inner">
-      <h1 class="app-title">Morning&nbsp;Brief</h1>
-      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">
-        <span aria-hidden="true">&#9788;</span>
-      </button>
+  <header class="hero">
+    <div class="hero-grain" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-top">
+        <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
+        <button id="theme-toggle" class="pill-btn" type="button" aria-label="Toggle theme">
+          <span id="theme-toggle-label">Dark</span>
+        </button>
+      </div>
+      <h1 class="hero-title">Today's news &amp; brief — with a running library of every day before it.</h1>
     </div>
-    <nav class="tabs" role="tablist" aria-label="View">
-      <button class="tab active" data-view="today" role="tab" aria-selected="true">Today</button>
-      <button class="tab" data-view="library" role="tab" aria-selected="false">Library</button>
-    </nav>
   </header>
+
+  <nav class="tabs-bar" role="tablist" aria-label="View">
+    <button class="tab active" data-view="today" role="tab" aria-selected="true">Today</button>
+    <button class="tab" data-view="library" role="tab" aria-selected="false">Library</button>
+  </nav>
 
   <main id="main">
     <section id="view-today" class="view" data-view-panel="today">
@@ -44,7 +52,8 @@
   </main>
 
   <footer class="app-footer">
-    <p>Sources: The Verge &middot; MIT Technology Review &middot; Wired</p>
+    <span class="dot dot-sm" aria-hidden="true"></span>
+    <p>Sources — The Verge, MIT Technology Review, Wired</p>
   </footer>
 </div>
 
