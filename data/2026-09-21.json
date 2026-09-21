@@ -1,0 +1,76 @@
+{
+  "date": "2026-09-21",
+  "brief": null,
+  "news": {
+    "verge": {
+      "source": "The Verge",
+      "items": [
+        {
+          "title": "Can John Ternus find Apple\u2019s next big thing?",
+          "url": "https://www.theverge.com/podcast/996874/apple-john-ternus-tim-cook-mark-gurman-future-ai-siri-iphone",
+          "summary": "Today, I\u2019m talking with Mark Gurman, who is the world\u2019s best-sourced Apple reporter \u2014 both as Bloomberg\u2019s chief Apple correspondent and the host of the upcoming podcast Power On. Earlier this month, Apple hosted its...",
+          "published": "2026-09-21T10:00:00-04:00"
+        },
+        {
+          "title": "iPhone owners can now submit claims in Apple\u2019s $250 million Siri AI settlement",
+          "url": "https://www.theverge.com/tech/998191/apple-siri-ai-iphone-16-class-action-lawsuit-settlement",
+          "summary": "Apple is paying $250 million to settle claims that it failed to deliver an AI-upgraded Siri - and now, eligible iPhone owners can submit a claim for a payout. If you live in the US and purchased an iPhone 15 Pro,...",
+          "published": "2026-09-21T09:36:52-04:00"
+        },
+        {
+          "title": "Vivo\u2019s X500 Pro Max has 17 stops of dynamic range and 4K240 slo-mo",
+          "url": "https://www.theverge.com/gadgets/998165/vivo-x500-pro-max-launch-specs-release-date-lofic-china",
+          "summary": "Vivo's new X500 flagship phones have arrived in China, and as usual the company's focus is firmly on photography. The X500 Pro Max - a new tier in its lineup - is the first phone to use new sensors and silicon from...",
+          "published": "2026-09-21T09:16:25-04:00"
+        }
+      ]
+    },
+    "mit_tech_review": {
+      "source": "MIT Technology Review",
+      "items": [
+        {
+          "title": "The Download: investigating deaths at the US border\u2019s \u201cvirtual wall\u201d",
+          "url": "https://www.technologyreview.com/2026/09/21/1144834/the-download-investigating-deaths-at-the-us-borders-virtual-wall/",
+          "summary": "This is today\u2019s edition of The Download, our weekday newsletter that provides a daily dose of what\u2019s going on in the world of technology. The US spent billions on border surveillance. Why can\u2019t it catch people before...",
+          "published": "Mon, 21 Sep 2026 12:20:00 +0000"
+        },
+        {
+          "title": "How we made the first comprehensive map of deaths along the US border\u2019s \u201cvirtual wall\u201d",
+          "url": "https://www.technologyreview.com/2026/09/21/1144161/border-towers-surveillance-methodology/",
+          "summary": "Our 15-month investigation into death and surveillance along the US-Mexico border began with a simple question: Why did so many people die near government surveillance towers meant to help track and apprehend them?...",
+          "published": "Mon, 21 Sep 2026 12:00:00 +0000"
+        },
+        {
+          "title": "4 ways to address the failures we found along the US border\u2019s \u201cvirtual wall\u201d",
+          "url": "https://www.technologyreview.com/2026/09/21/1144164/border-towers-surveillance-policy-recommendations/",
+          "summary": "MIT Technology Review today published our investigation into how many people have died near the \u201cvirtual wall\u201d of surveillance towers that the US government has installed along the US-Mexico border. We found cases of...",
+          "published": "Mon, 21 Sep 2026 12:00:00 +0000"
+        }
+      ]
+    },
+    "wired": {
+      "source": "Wired",
+      "items": [
+        {
+          "title": "Here\u2019s the iFixit Repairability Rating for the iPhone 18 Pro",
+          "url": "https://www.wired.com/story/ifixit-rating-for-the-iphone-18-pro-repairability/",
+          "summary": "It\u2019s actually pretty good for an iPhone, given Apple\u2019s long-standing reticence to make its products repairable.",
+          "published": "Mon, 21 Sep 2026 14:15:09 +0000"
+        },
+        {
+          "title": "Got an Android Phone? Google Thinks You\u2019ll Probably Want a Googlebook Laptop",
+          "url": "https://www.wired.com/story/google-launches-googlebook-laptops/",
+          "summary": "Apple lovers have long enjoyed seamless connectivity between their iPhones and Macs. Now, Google\u2019s bringing that experience to Android.",
+          "published": "Mon, 21 Sep 2026 13:00:00 +0000"
+        },
+        {
+          "title": "Apple Mac Mini (M6) Review: For the AI Curious",
+          "url": "https://www.wired.com/review/apple-mac-mini-m6/",
+          "summary": "Apple has refreshed the Mac Mini with a brand-new chip, the M6. And this time, it\u2019s more focused on AI than ever.",
+          "published": "Mon, 21 Sep 2026 13:00:00 +0000"
+        }
+      ]
+    }
+  },
+  "generated_at": "2026-09-21T16:07:18+01:00"
+}

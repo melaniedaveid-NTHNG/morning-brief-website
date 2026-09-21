@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Morning Brief</title>
+<meta name="description" content="Daily morning brief and tech news library.">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <h1 class="app-title">Morning&nbsp;Brief</h1>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">
+        <span aria-hidden="true">&#9788;</span>
+      </button>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="View">
+      <button class="tab active" data-view="today" role="tab" aria-selected="true">Today</button>
+      <button class="tab" data-view="library" role="tab" aria-selected="false">Library</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="view-today" class="view" data-view-panel="today">
+      <div id="today-content" class="day-content">
+        <p class="loading">Loading today&rsquo;s brief&hellip;</p>
+      </div>
+    </section>
+
+    <section id="view-library" class="view" data-view-panel="library" hidden>
+      <div class="library-layout">
+        <aside class="library-list" id="library-list" aria-label="Past briefings">
+          <p class="loading">Loading library&hellip;</p>
+        </aside>
+        <div class="library-detail" id="library-detail">
+          <p class="empty-state">Pick a day from the list to see what happened.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Sources: The Verge &middot; MIT Technology Review &middot; Wired</p>
+  </footer>
+</div>
+
+<template id="day-template">
+  <div class="day">
+    <div class="brief-block" data-slot="brief"></div>
+    <div class="news-columns" data-slot="news"></div>
+  </div>
+</template>
+
+<template id="news-source-template">
+  <div class="news-source">
+    <h3 class="news-source-title"></h3>
+    <ul class="news-items"></ul>
+  </div>
+</template>
+
+<template id="news-item-template">
+  <li class="news-item">
+    <a class="news-item-title" target="_blank" rel="noopener"></a>
+    <p class="news-item-summary"></p>
+    <span class="news-item-meta"></span>
+  </li>
+</template>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
