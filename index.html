@@ -42,8 +42,13 @@
     </section>
 
     <section id="view-library" class="view" data-view-panel="library" hidden>
-      <div class="library-feed" id="library-feed">
-        <p class="loading">Loading library&hellip;</p>
+      <div class="library-layout">
+        <ul class="library-days" id="library-days" aria-label="Past briefings">
+          <li class="loading">Loading library&hellip;</li>
+        </ul>
+        <div class="library-detail" id="library-detail">
+          <p class="empty-state">Pick a day to see what happened.</p>
+        </div>
       </div>
     </section>
   </main>

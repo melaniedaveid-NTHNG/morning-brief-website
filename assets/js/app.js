@@ -16,6 +16,12 @@
     return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   }
 
+  function formatDateListItem(isoDate) {
+    const d = new Date(`${isoDate}T00:00:00`);
+    if (Number.isNaN(d.getTime())) return isoDate;
+    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  }
+
   function formatPublished(pubDateStr) {
     if (!pubDateStr) return "";
     const d = new Date(pubDateStr);
@@ -166,22 +172,46 @@
 
   async function renderLibrary() {
     if (libraryLoaded) return;
-    const feedEl = $("#library-feed");
+    const listEl = $("#library-days");
     try {
       const index = await getIndex();
       const dates = index.dates || [];
       if (dates.length === 0) {
-        feedEl.innerHTML = '<p class="empty-state">No briefings saved yet.</p>';
+        listEl.innerHTML = '<li class="empty-state">No briefings saved yet.</li>';
         return;
       }
-      const days = await Promise.all(dates.map((isoDate) => getDay(isoDate)));
-      feedEl.innerHTML = "";
+      listEl.innerHTML = "";
       dates.forEach((isoDate, i) => {
-        feedEl.appendChild(buildDayView(days[i], isoDate));
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "library-day" + (i === 0 ? " active" : "");
+        btn.dataset.date = isoDate;
+        btn.textContent = formatDateListItem(isoDate);
+        btn.addEventListener("click", () => selectLibraryDay(isoDate));
+        li.appendChild(btn);
+        listEl.appendChild(li);
       });
       libraryLoaded = true;
+      await selectLibraryDay(dates[0]);
     } catch (err) {
-      feedEl.innerHTML = `<p class="error-state">Couldn’t load library: ${err.message}</p>`;
+      listEl.innerHTML = `<li class="error-state">Couldn’t load library: ${err.message}</li>`;
+    }
+  }
+
+  async function selectLibraryDay(isoDate) {
+    const listEl = $("#library-days");
+    const detailEl = $("#library-detail");
+    listEl.querySelectorAll(".library-day").forEach((el) => {
+      el.classList.toggle("active", el.dataset.date === isoDate);
+    });
+    detailEl.innerHTML = '<p class="loading">Loading…</p>';
+    try {
+      const day = await getDay(isoDate);
+      detailEl.innerHTML = "";
+      detailEl.appendChild(buildDayView(day, isoDate));
+    } catch (err) {
+      detailEl.innerHTML = `<p class="error-state">Couldn’t load ${isoDate}: ${err.message}</p>`;
     }
   }
 
