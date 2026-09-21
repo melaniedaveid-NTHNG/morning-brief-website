@@ -145,6 +145,12 @@ body {
 
 .weather-chip:empty { display: none; }
 
+.hero-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Pill button */
 .pill-btn {
   border: 1px solid rgba(244, 244, 242, 0.35);
@@ -160,6 +166,12 @@ body {
 
 .pill-btn:hover {
   background: var(--hero-text);
+  color: var(--hero-bg);
+}
+
+.pill-btn.playing {
+  background: var(--accent);
+  border-color: var(--accent);
   color: var(--hero-bg);
 }
 

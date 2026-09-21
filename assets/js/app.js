@@ -293,9 +293,48 @@
     }
   }
 
+  const RADIO_STREAM_URL = "https://dispatcher.rndfnk.com/rbb/radioeins/live/mp3/mid";
+
+  function initRadio() {
+    const btn = $("#radio-toggle");
+    const label = $("#radio-toggle-label");
+    const audio = $("#radio-audio");
+    if (!btn || !audio) return;
+
+    const setLabel = (text) => { if (label) label.textContent = text; };
+
+    audio.addEventListener("waiting", () => setLabel("▶ Loading…"));
+    audio.addEventListener("playing", () => {
+      btn.classList.add("playing");
+      setLabel("■ radioeins");
+    });
+    audio.addEventListener("pause", () => {
+      btn.classList.remove("playing");
+      setLabel("▶ radioeins");
+    });
+    audio.addEventListener("error", () => {
+      btn.classList.remove("playing");
+      setLabel("radioeins unavailable");
+      setTimeout(() => setLabel("▶ radioeins"), 3000);
+    });
+
+    btn.addEventListener("click", () => {
+      if (audio.paused) {
+        if (!audio.src) audio.src = RADIO_STREAM_URL;
+        audio.play().catch(() => {
+          setLabel("radioeins unavailable");
+          setTimeout(() => setLabel("▶ radioeins"), 3000);
+        });
+      } else {
+        audio.pause();
+      }
+    });
+  }
+
   function init() {
     initTheme();
     initTabs();
+    initRadio();
     renderWeather();
     renderToday();
   }

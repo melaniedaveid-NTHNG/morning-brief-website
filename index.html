@@ -22,11 +22,17 @@
           <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
           <span class="weather-chip" id="weather-chip" aria-live="polite"></span>
         </div>
-        <button id="theme-toggle" class="pill-btn" type="button" aria-label="Toggle theme">
-          <span id="theme-toggle-label">Dark</span>
-        </button>
+        <div class="hero-top-right">
+          <button id="radio-toggle" class="pill-btn" type="button" aria-label="Play radioeins livestream">
+            <span id="radio-toggle-label">&#9654; radioeins</span>
+          </button>
+          <button id="theme-toggle" class="pill-btn" type="button" aria-label="Toggle theme">
+            <span id="theme-toggle-label">Dark</span>
+          </button>
+        </div>
       </div>
     </div>
+    <audio id="radio-audio" preload="none"></audio>
   </header>
 
   <nav class="tabs-bar" role="tablist" aria-label="View">
