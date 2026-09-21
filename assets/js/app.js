@@ -331,10 +331,58 @@
     });
   }
 
+  const LEAVE_HOUR = 8;
+  const LEAVE_MINUTE = 50;
+  const LEAVE_GRACE_MS = 10 * 60 * 1000;
+
+  function nextLeaveTarget(now) {
+    const target = new Date(now);
+    target.setHours(LEAVE_HOUR, LEAVE_MINUTE, 0, 0);
+    if (now.getTime() > target.getTime() + LEAVE_GRACE_MS) {
+      target.setDate(target.getDate() + 1);
+    }
+    return target;
+  }
+
+  function updateCountdown() {
+    const el = $("#countdown-chip");
+    if (!el) return;
+    const now = new Date();
+    const target = nextLeaveTarget(now);
+    const diffMs = target.getTime() - now.getTime();
+
+    if (diffMs <= 0) {
+      el.textContent = "Leave now — 8:50 departure";
+      return;
+    }
+
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    let text;
+    if (h > 0) {
+      text = `Leave in ${h}h ${m}m`;
+    } else if (m > 0) {
+      text = `Leave in ${m}m ${s}s`;
+    } else {
+      text = `Leave in ${s}s`;
+    }
+    el.textContent = `${text} · 8:50 departure`;
+  }
+
+  function initCountdown() {
+    if (!$("#countdown-chip")) return;
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  }
+
   function init() {
     initTheme();
     initTabs();
     initRadio();
+    initCountdown();
     renderWeather();
     renderToday();
   }

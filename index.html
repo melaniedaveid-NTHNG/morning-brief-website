@@ -21,13 +21,11 @@
         <div class="hero-top-left">
           <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
           <span class="weather-chip" id="weather-chip" aria-live="polite"></span>
+          <span class="countdown-chip" id="countdown-chip" aria-live="polite"></span>
         </div>
         <div class="hero-top-right">
           <button id="radio-toggle" class="pill-btn" type="button" aria-label="Play radioeins livestream">
             <span id="radio-toggle-label">&#9654; radioeins</span>
-          </button>
-          <button id="theme-toggle" class="pill-btn" type="button" aria-label="Toggle theme">
-            <span id="theme-toggle-label">Dark</span>
           </button>
         </div>
       </div>
@@ -60,8 +58,13 @@
   </main>
 
   <footer class="app-footer">
-    <span class="dot dot-sm" aria-hidden="true"></span>
-    <p>Sources — The Verge, MIT Technology Review, Wired</p>
+    <div class="app-footer-sources">
+      <span class="dot dot-sm" aria-hidden="true"></span>
+      <p>Sources — The Verge, MIT Technology Review, Wired</p>
+    </div>
+    <button id="theme-toggle" class="pill-btn pill-btn-alt" type="button" aria-label="Toggle theme">
+      <span id="theme-toggle-label">Dark</span>
+    </button>
   </footer>
 </div>
 

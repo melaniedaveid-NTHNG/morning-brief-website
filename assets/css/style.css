@@ -145,6 +145,16 @@ body {
 
 .weather-chip:empty { display: none; }
 
+.countdown-chip {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  padding-left: 14px;
+  border-left: 1px solid rgba(244, 244, 242, 0.25);
+}
+
+.countdown-chip:empty { display: none; }
+
 .hero-top-right {
   display: flex;
   align-items: center;
@@ -167,6 +177,16 @@ body {
 .pill-btn:hover {
   background: var(--hero-text);
   color: var(--hero-bg);
+}
+
+.pill-btn-alt {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.pill-btn-alt:hover {
+  background: var(--text);
+  color: var(--bg);
 }
 
 .pill-btn.playing {
@@ -390,14 +410,21 @@ main {
 
 .app-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 16px;
   text-align: center;
-  padding: 20px;
+  padding: 28px 20px 36px 20px;
   font-size: 0.74rem;
   letter-spacing: 0.03em;
   color: var(--text-muted);
+}
+
+.app-footer-sources {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .app-footer p { margin: 0; }
