@@ -18,12 +18,14 @@
     <div class="hero-grain" aria-hidden="true"></div>
     <div class="hero-inner">
       <div class="hero-top">
-        <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
+        <div class="hero-top-left">
+          <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
+          <span class="weather-chip" id="weather-chip" aria-live="polite"></span>
+        </div>
         <button id="theme-toggle" class="pill-btn" type="button" aria-label="Toggle theme">
           <span id="theme-toggle-label">Dark</span>
         </button>
       </div>
-      <h1 class="hero-title" id="hero-date">&nbsp;</h1>
     </div>
   </header>
 
@@ -40,13 +42,8 @@
     </section>
 
     <section id="view-library" class="view" data-view-panel="library" hidden>
-      <div class="library-layout">
-        <aside class="library-list" id="library-list" aria-label="Past briefings">
-          <p class="loading">Loading library&hellip;</p>
-        </aside>
-        <div class="library-detail" id="library-detail">
-          <p class="empty-state">Pick a day from the list to see what happened.</p>
-        </div>
+      <div class="library-feed" id="library-feed">
+        <p class="loading">Loading library&hellip;</p>
       </div>
     </section>
   </main>
@@ -59,6 +56,7 @@
 
 <template id="day-template">
   <div class="day">
+    <p class="brief-date" data-slot="date"></p>
     <div class="brief-block" data-slot="brief"></div>
     <div class="news-columns" data-slot="news"></div>
   </div>

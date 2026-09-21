@@ -2,7 +2,8 @@
 
 A small mobile-first site that shows today's brief plus the latest 3 articles from
 **The Verge**, **MIT Technology Review**, and **Wired** — and keeps every past day
-around as a browsable library.
+around as a browsable library. The header shows a small live London weather
+reading (via the free [Open-Meteo](https://open-meteo.com/) API, no key needed).
 
 ## Structure
 

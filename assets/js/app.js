@@ -10,23 +10,10 @@
   const sourceTemplate = $("#news-source-template");
   const itemTemplate = $("#news-item-template");
 
-  function localISODate(date = new Date()) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
-  }
-
   function formatDateLabel(isoDate) {
     const d = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(d.getTime())) return isoDate;
     return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  }
-
-  function formatDateShort(isoDate) {
-    const d = new Date(`${isoDate}T00:00:00`);
-    if (Number.isNaN(d.getTime())) return isoDate;
-    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
   }
 
   function formatPublished(pubDateStr) {
@@ -149,9 +136,10 @@
     }
   }
 
-  function buildDayView(day) {
+  function buildDayView(day, isoDate) {
     const node = dayTemplate.content.cloneNode(true);
     const wrapper = node.querySelector(".day");
+    wrapper.querySelector('[data-slot="date"]').textContent = formatDateLabel(day.date || isoDate);
     renderBrief(wrapper.querySelector('[data-slot="brief"]'), day.brief);
     renderNews(wrapper.querySelector('[data-slot="news"]'), day.news);
     return wrapper;
@@ -168,55 +156,32 @@
       const latest = index.dates[0];
       const day = await getDay(latest);
       container.innerHTML = "";
-      container.appendChild(buildDayView(day));
+      container.appendChild(buildDayView(day, latest));
     } catch (err) {
       container.innerHTML = `<p class="error-state">Couldn’t load today’s brief: ${err.message}</p>`;
     }
   }
 
+  let libraryLoaded = false;
+
   async function renderLibrary() {
-    const listEl = $("#library-list");
-    const detailEl = $("#library-detail");
+    if (libraryLoaded) return;
+    const feedEl = $("#library-feed");
     try {
       const index = await getIndex();
       const dates = index.dates || [];
       if (dates.length === 0) {
-        listEl.innerHTML = '<p class="empty-state">No briefings saved yet.</p>';
+        feedEl.innerHTML = '<p class="empty-state">No briefings saved yet.</p>';
         return;
       }
-      listEl.innerHTML = "";
+      const days = await Promise.all(dates.map((isoDate) => getDay(isoDate)));
+      feedEl.innerHTML = "";
       dates.forEach((isoDate, i) => {
-        const btn = document.createElement("button");
-        btn.className = "library-item" + (i === 0 ? " active" : "");
-        btn.type = "button";
-        btn.dataset.date = isoDate;
-        btn.innerHTML = `${formatDateShort(isoDate)}<span class="sub">${isoDate}</span>`;
-        btn.addEventListener("click", () => selectLibraryDay(isoDate));
-        listEl.appendChild(btn);
+        feedEl.appendChild(buildDayView(days[i], isoDate));
       });
-      await selectLibraryDay(dates[0]);
+      libraryLoaded = true;
     } catch (err) {
-      listEl.innerHTML = `<p class="error-state">Couldn’t load library: ${err.message}</p>`;
-    }
-  }
-
-  async function selectLibraryDay(isoDate) {
-    const listEl = $("#library-list");
-    const detailEl = $("#library-detail");
-    listEl.querySelectorAll(".library-item").forEach((el) => {
-      el.classList.toggle("active", el.dataset.date === isoDate);
-    });
-    detailEl.innerHTML = '<p class="loading">Loading…</p>';
-    try {
-      const day = await getDay(isoDate);
-      detailEl.innerHTML = "";
-      const label = document.createElement("p");
-      label.className = "brief-date";
-      label.textContent = formatDateLabel(day.date || isoDate);
-      detailEl.appendChild(label);
-      detailEl.appendChild(buildDayView(day));
-    } catch (err) {
-      detailEl.innerHTML = `<p class="error-state">Couldn’t load ${isoDate}: ${err.message}</p>`;
+      feedEl.innerHTML = `<p class="error-state">Couldn’t load library: ${err.message}</p>`;
     }
   }
 
@@ -266,15 +231,42 @@
     });
   }
 
-  function renderHeroDate() {
-    const el = $("#hero-date");
-    if (el) el.textContent = formatDateLabel(localISODate());
+  const WEATHER_CODES = {
+    0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast",
+    45: "Fog", 48: "Fog",
+    51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle",
+    61: "Light rain", 63: "Rain", 65: "Heavy rain",
+    66: "Freezing rain", 67: "Freezing rain",
+    71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains",
+    80: "Rain showers", 81: "Rain showers", 82: "Heavy showers",
+    85: "Snow showers", 86: "Snow showers",
+    95: "Thunderstorm", 96: "Thunderstorm", 99: "Thunderstorm",
+  };
+
+  async function renderWeather() {
+    const el = $("#weather-chip");
+    if (!el) return;
+    try {
+      const res = await fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&current=temperature_2m,weather_code&timezone=Europe%2FLondon",
+        { cache: "no-store" }
+      );
+      if (!res.ok) throw new Error(`weather ${res.status}`);
+      const data = await res.json();
+      const temp = Math.round(data.current?.temperature_2m);
+      const desc = WEATHER_CODES[data.current?.weather_code] || "";
+      if (Number.isFinite(temp)) {
+        el.textContent = `London ${temp}°C${desc ? " · " + desc : ""}`;
+      }
+    } catch (err) {
+      el.remove();
+    }
   }
 
   function init() {
     initTheme();
     initTabs();
-    renderHeroDate();
+    renderWeather();
     renderToday();
   }
 
