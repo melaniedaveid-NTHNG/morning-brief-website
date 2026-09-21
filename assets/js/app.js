@@ -10,6 +10,13 @@
   const sourceTemplate = $("#news-source-template");
   const itemTemplate = $("#news-item-template");
 
+  function localISODate(date = new Date()) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
   function formatDateLabel(isoDate) {
     const d = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(d.getTime())) return isoDate;
@@ -161,10 +168,6 @@
       const latest = index.dates[0];
       const day = await getDay(latest);
       container.innerHTML = "";
-      const label = document.createElement("p");
-      label.className = "brief-date";
-      label.textContent = formatDateLabel(day.date || latest);
-      container.appendChild(label);
       container.appendChild(buildDayView(day));
     } catch (err) {
       container.innerHTML = `<p class="error-state">Couldn’t load today’s brief: ${err.message}</p>`;
@@ -263,9 +266,15 @@
     });
   }
 
+  function renderHeroDate() {
+    const el = $("#hero-date");
+    if (el) el.textContent = formatDateLabel(localISODate());
+  }
+
   function init() {
     initTheme();
     initTabs();
+    renderHeroDate();
     renderToday();
   }
 

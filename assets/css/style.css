@@ -127,11 +127,11 @@ body {
 
 .hero-title {
   font-weight: 400;
-  font-size: 1.7rem;
-  line-height: 1.32;
+  font-size: 2.1rem;
+  line-height: 1.25;
   letter-spacing: -0.01em;
-  margin: 22px 0 4px 0;
-  max-width: 26ch;
+  margin: 26px 0 4px 0;
+  max-width: 20ch;
 }
 
 /* Pill button */
@@ -386,7 +386,7 @@ main {
 .app-footer p { margin: 0; }
 
 @media (min-width: 640px) {
-  .hero-title { font-size: 2.1rem; }
+  .hero-title { font-size: 2.6rem; }
   .news-columns { flex-direction: row; }
   .news-source { flex: 1; }
   .library-layout { flex-direction: row; align-items: flex-start; }
