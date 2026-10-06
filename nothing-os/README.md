@@ -6,7 +6,7 @@ talking to it.
 
 ```
 nothing-os/
-├── app/          Android app (Kotlin, Jetpack Compose), minSdk 31, target 35
+├── app/          Android app (Kotlin, Jetpack Compose), minSdk 33, target 35
 └── prototype/    Browser prototype of the same agent, gestures and buttons
 ```
 

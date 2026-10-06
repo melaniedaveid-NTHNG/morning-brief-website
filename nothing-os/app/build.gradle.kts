@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "tech.nothing.agentos"
-        // 31+ for RenderEffect (the agent's gooey look). Phone (3) ships far newer.
-        minSdk = 31
+        // 33: the Glyph Matrix SDK's minimum (RenderEffect needs 31). Phone (3) ships far newer.
+        minSdk = 33
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
