@@ -87,10 +87,7 @@ class GlyphMatrix(context: Context, private val forToy: Boolean) {
         private const val TAG = "GlyphMatrix"
         private const val PKG = "com.nothing.ketchum"
 
-        /**
-         * Top of the brightness scale the SDK accepts per LED.
-         * TODO: confirm on device: the kit docs are the source of truth for this range.
-         */
-        const val MAX_BRIGHTNESS = 4095
+        /** Per-LED brightness range of the SDK: 0 (off) to 255. */
+        const val MAX_BRIGHTNESS = 255
     }
 }

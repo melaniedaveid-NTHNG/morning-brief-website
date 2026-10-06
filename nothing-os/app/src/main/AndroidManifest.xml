@@ -27,12 +27,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AgentOS">
 
-        <!-- Glyph developer key. "test" works once Glyph debug is on:
-             adb shell settings put global nt_glyph_interface_debug_enable 1 -->
-        <meta-data
-            android:name="NothingKey"
-            android:value="test" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true"

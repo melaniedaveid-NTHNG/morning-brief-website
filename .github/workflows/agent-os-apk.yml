@@ -30,6 +30,14 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # Nothing's licence doesn't allow redistributing the SDK, so it isn't committed: fetch the
+      # official AAR from the developer kit on every build.
+      - name: Fetch the Glyph Matrix SDK
+        run: |
+          git clone --depth 1 https://github.com/Nothing-Developer-Programme/GlyphMatrix-Developer-Kit "$RUNNER_TEMP/gdk"
+          cp "$RUNNER_TEMP"/gdk/*.aar app/libs/
+          ls -l app/libs
+
       # The runner image ships the Android SDK; AGP finds it through ANDROID_HOME.
       - name: Build debug APK
         run: ./gradlew --no-daemon assembleDebug

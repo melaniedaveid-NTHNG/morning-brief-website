@@ -22,10 +22,8 @@ import androidx.compose.ui.graphics.RenderEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import tech.nothing.agentos.agent.AgentModel
 import tech.nothing.agentos.agent.AgentModel.Kind
 import tech.nothing.agentos.agent.Stimulus
@@ -36,12 +34,10 @@ private const val SPAN_W = 10f
 private const val SPAN_H = 14f
 
 /**
- * The agent. Layers, back to front:
- *  1. shell bubbles, filled white and merged ("goo")
- *  2. the same bubbles inset by a hairline in background colour -> merged outlines
- *  3. a soft glow of the core
- *  4. the core, merged
- *  5. crisp details: ring holes, dots, pills, orbit lines
+ * The agent: blobs only. Layers, back to front:
+ *  1. a soft glow of the core
+ *  2. the core, merged ("goo")
+ *  3. solid details on top: ring holes, pips, the bright pill, dim discs
  *
  * "Goo" = blur then a steep alpha threshold, so nearby shapes melt into one blob.
  */
@@ -60,7 +56,6 @@ fun AgentOrb(
     BoxWithConstraints(modifier) {
         val density = LocalDensity.current
         val unit = with(density) { min(maxWidth.toPx() / SPAN_W, maxHeight.toPx() / SPAN_H) }
-        val hairline = with(density) { 1.1.dp.toPx() }
         val goo = remember(unit) { gooEffect(unit * 0.12f) }
         val glowBlur = remember(unit) { blurEffect(unit * 0.55f) }
 
@@ -70,12 +65,6 @@ fun AgentOrb(
         }
 
         Box(Modifier.fillMaxSize()) {
-            Canvas(Modifier.fillMaxSize().gooLayer()) {
-                drawShell(model, time.floatValue, stimulus.value, unit, inset = 0f, color = Color.White)
-            }
-            Canvas(Modifier.fillMaxSize().gooLayer()) {
-                drawShell(model, time.floatValue, stimulus.value, unit, inset = hairline, color = Palette.Background)
-            }
             Canvas(
                 Modifier.fillMaxSize().graphicsLayer {
                     renderEffect = glowBlur
@@ -88,7 +77,7 @@ fun AgentOrb(
                 drawCore(model, time.floatValue, stimulus.value, unit)
             }
             Canvas(Modifier.fillMaxSize()) {
-                drawDetails(model, time.floatValue, stimulus.value, unit, hairline)
+                drawDetails(model, time.floatValue, stimulus.value, unit)
             }
         }
     }
@@ -96,23 +85,6 @@ fun AgentOrb(
 
 private fun DrawScope.at(x: Float, y: Float, unit: Float) =
     Offset(center.x + x * unit, center.y + y * unit)
-
-private fun DrawScope.drawShell(
-    model: AgentModel, t: Float, s: Stimulus, unit: Float, inset: Float, color: Color,
-) {
-    for (b in model.bubbles) {
-        val r = model.bubbleR(b, t) * unit - inset
-        drawCircle(color, r, at(model.bubbleX(b, t, s), model.bubbleY(b, t, s), unit))
-    }
-    val spread = model.spread(s)
-    for (p in model.pills) {
-        val w = 0.62f * unit - 2 * inset
-        val len = p.length * unit - 2 * inset
-        val box = if (p.vertical) Size(w, len) else Size(len, w)
-        val c = at(p.x * spread, p.y * spread, unit)
-        drawRoundRect(color, Offset(c.x - box.width / 2, c.y - box.height / 2), box, CornerRadius(w / 2))
-    }
-}
 
 private fun DrawScope.drawCore(model: AgentModel, t: Float, s: Stimulus, unit: Float, grow: Float = 1f) {
     for (l in model.links) {
@@ -131,7 +103,7 @@ private fun DrawScope.drawCore(model: AgentModel, t: Float, s: Stimulus, unit: F
     }
 }
 
-private fun DrawScope.drawDetails(model: AgentModel, t: Float, s: Stimulus, unit: Float, hairline: Float) {
+private fun DrawScope.drawDetails(model: AgentModel, t: Float, s: Stimulus, unit: Float) {
     // Ring cells: dark hole with a bright pip. Some plain cells carry a dark pip.
     for (i in model.cells.indices) {
         val c = model.cells[i]
@@ -145,39 +117,24 @@ private fun DrawScope.drawDetails(model: AgentModel, t: Float, s: Stimulus, unit
             c.pip -> drawCircle(Palette.Background, r * 0.17f, pos)
         }
     }
-    // Shell bubbles: a centre dot, or a dim filled disc.
+    // A few dim discs drifting around the core.
     for (b in model.bubbles) {
-        val pos = at(model.bubbleX(b, t, s), model.bubbleY(b, t, s), unit)
-        if (b.grey) drawCircle(Color.White.copy(alpha = 0.22f), 0.3f * unit, pos)
-        else drawCircle(Color.White, 0.06f * unit, pos)
+        if (!b.grey) continue
+        drawCircle(Color.White.copy(alpha = 0.22f), 0.3f * unit, at(model.bubbleX(b, t, s), model.bubbleY(b, t, s), unit))
     }
-    // Pills: bright ones are solid with a dark slot, the rest get a slot outline.
+    // Bright pills: solid with a dark slot.
     val spread = model.spread(s)
     for (p in model.pills) {
+        if (!p.bright) continue
         val c = at(p.x * spread, p.y * spread, unit)
+        val w = 0.62f * unit
+        val outer = if (p.vertical) Size(w, p.length * unit) else Size(p.length * unit, w)
+        drawRoundRect(Color.White, Offset(c.x - outer.width / 2, c.y - outer.height / 2), outer, CornerRadius(w / 2))
         val slotW = 0.2f * unit
         val slotL = (p.length - 0.45f) * unit
         val slot = if (p.vertical) Size(slotW, slotL) else Size(slotL, slotW)
-        val topLeft = Offset(c.x - slot.width / 2, c.y - slot.height / 2)
-        if (p.bright) {
-            val w = 0.62f * unit
-            val outer = if (p.vertical) Size(w, p.length * unit) else Size(p.length * unit, w)
-            drawRoundRect(Color.White, Offset(c.x - outer.width / 2, c.y - outer.height / 2), outer, CornerRadius(w / 2))
-            drawRoundRect(Palette.Background, topLeft, slot, CornerRadius(slotW / 2))
-        } else {
-            drawRoundRect(Color.White, topLeft, slot, CornerRadius(slotW / 2), style = Stroke(hairline))
-        }
+        drawRoundRect(Palette.Background, Offset(c.x - slot.width / 2, c.y - slot.height / 2), slot, CornerRadius(slotW / 2))
     }
-    // Two faint orbits around the core.
-    val orbit = Color.White.copy(alpha = 0.28f)
-    val o1 = Size(6.6f * unit * spread, 10.2f * unit * spread)
-    drawOval(orbit, Offset(center.x - o1.width / 2, center.y - o1.height / 2), o1, style = Stroke(hairline))
-    val o2 = Size(8.0f * unit * spread, 8.6f * unit * spread)
-    drawArc(
-        orbit, startAngle = 200f + t * 2f, sweepAngle = 140f, useCenter = false,
-        topLeft = Offset(center.x - o2.width / 2, center.y - o2.height / 2 - 1.2f * unit),
-        size = o2, style = Stroke(hairline),
-    )
 }
 
 private fun blurEffect(radius: Float): RenderEffect =

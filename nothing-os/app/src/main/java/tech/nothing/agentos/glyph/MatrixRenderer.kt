@@ -1,5 +1,6 @@
 package tech.nothing.agentos.glyph
 
+import android.os.SystemClock
 import tech.nothing.agentos.agent.AgentModel
 import tech.nothing.agentos.agent.AgentModel.Companion.smoothstep
 import tech.nothing.agentos.agent.Mode
@@ -9,14 +10,28 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-/** Samples the agent onto the Phone (3)'s round 25x25 Glyph Matrix. */
+/**
+ * Samples the agent onto the Phone (3)'s round 25x25 Glyph Matrix. When the agent says
+ * something, the words take over the Matrix; in the info view it shows the clock.
+ */
 class MatrixRenderer(private val model: AgentModel) {
 
     private val frame = IntArray(SIZE * SIZE)
     private val pose = model.Snapshot()
 
-    /** Returns a row-major brightness frame, 0..[GlyphMatrix.MAX_BRIGHTNESS]. Reuses one buffer. */
-    fun render(t: Float, s: Stimulus): IntArray {
+    /** The current Matrix frame for [MatrixFeed]: row-major brightness, 0..[GlyphMatrix.MAX_BRIGHTNESS]. */
+    fun render(t: Float, now: Long = SystemClock.elapsedRealtime()): IntArray {
+        val message = MatrixFeed.activeMessage(now)
+        val clock = MatrixFeed.clock
+        return when {
+            message != null -> renderText(message.columns, scrollX(message, now))
+            clock != null -> renderText(MatrixFont.columns(clock), centeredX(MatrixFont.columns(clock).size))
+            else -> renderAgent(t, MatrixFeed.stimulus)
+        }
+    }
+
+    /** Returns a row-major brightness frame. Reuses one buffer. */
+    fun renderAgent(t: Float, s: Stimulus): IntArray {
         val step = SPAN / SIZE
         val half = (SIZE - 1) / 2f
         pose.update(t, s)
@@ -37,6 +52,28 @@ class MatrixRenderer(private val model: AgentModel) {
             frame[row * SIZE + col] = (b * GlyphMatrix.MAX_BRIGHTNESS).roundToInt()
         }
         return frame
+    }
+
+    /** Draws text columns with the first column at matrix x = [x], vertically centred. */
+    fun renderText(columns: IntArray, x: Int): IntArray {
+        frame.fill(0)
+        val top = (SIZE - MatrixFont.HEIGHT) / 2
+        for (i in columns.indices) {
+            val col = x + i
+            if (col !in 0 until SIZE) continue
+            for (row in 0 until MatrixFont.HEIGHT) {
+                if (columns[i] and (1 shl row) != 0) frame[(top + row) * SIZE + col] = GlyphMatrix.MAX_BRIGHTNESS
+            }
+        }
+        return frame
+    }
+
+    private fun centeredX(width: Int) = (SIZE - width) / 2
+
+    private fun scrollX(m: MatrixFeed.Message, now: Long): Int {
+        if (m.columns.size <= SIZE) return centeredX(m.columns.size)
+        val elapsed = (now - m.startedAt - MatrixFeed.SCROLL_LEAD_MS).coerceAtLeast(0)
+        return SIZE - (elapsed * MatrixFeed.SCROLL_PX_PER_S / 1000L).toInt()
     }
 
     companion object {

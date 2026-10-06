@@ -10,12 +10,11 @@ import android.os.Messenger
 import android.os.SystemClock
 import tech.nothing.agentos.MainActivity
 import tech.nothing.agentos.agent.AgentModel
-import tech.nothing.agentos.agent.Mode
-import tech.nothing.agentos.agent.Stimulus
 
 /**
- * The agent as a Glyph Toy: pick it with the Glyph Button on the back and it idles on the
- * Matrix. Long-press the Glyph Button to wake the agent on screen.
+ * The agent as a Glyph Toy: pick it with the Glyph Button on the back and it lives on the
+ * Matrix, showing the agent's state and replies (see [MatrixFeed]). Long-press the Glyph
+ * Button to wake the agent on screen.
  */
 class AgentGlyphToy : Service() {
 
@@ -28,7 +27,7 @@ class AgentGlyphToy : Service() {
     private val tick = object : Runnable {
         override fun run() {
             val t = (SystemClock.elapsedRealtime() - start) / 1000f
-            matrix.show(renderer.render(t, Stimulus(Mode.IDLE)))
+            matrix.show(renderer.render(t))
             main.postDelayed(this, FRAME_MS)
         }
     }

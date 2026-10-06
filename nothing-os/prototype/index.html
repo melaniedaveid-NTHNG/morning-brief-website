@@ -63,8 +63,6 @@
 <div class="phone" id="phone">
   <div class="toast" id="toast"></div>
   <div class="orb" id="orb">
-    <canvas class="goo" id="shellFill"></canvas>
-    <canvas class="goo" id="shellCut"></canvas>
     <canvas class="glow" id="glow"></canvas>
     <canvas class="goo" id="core"></canvas>
     <canvas id="details"></canvas>
@@ -104,7 +102,7 @@
 const model = new AgentModel();
 const phone = document.getElementById('phone');
 const orbEl = document.getElementById('orb');
-const layers = Object.fromEntries(['shellFill', 'shellCut', 'glow', 'core', 'details']
+const layers = Object.fromEntries(['glow', 'core', 'details']
   .map(id => [id, document.getElementById(id)]));
 const BG = '#0e0e0e';
 
@@ -128,22 +126,6 @@ function px(c, x, y) { return [c.width / 2 + x * unit, c.height / 2 + y * unit];
 function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); ctx.fill(); }
 function pillPath(ctx, cx, cy, w, h) { ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - h / 2, w, h, Math.min(w, h) / 2); }
 
-function drawShell(c, t, s, inset, color) {
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, c.width, c.height);
-  ctx.fillStyle = color;
-  for (const b of model.bubbles) {
-    const [x, y] = px(c, model.bubbleX(b, t, s), model.bubbleY(b, t, s));
-    circle(ctx, x, y, model.bubbleR(b, t) * unit - inset);
-  }
-  const sp = model.spread(s);
-  for (const p of model.pills) {
-    const w = 0.62 * unit - 2 * inset, len = p.length * unit - 2 * inset;
-    const [x, y] = px(c, p.x * sp, p.y * sp);
-    pillPath(ctx, x, y, p.vertical ? w : len, p.vertical ? len : w); ctx.fill();
-  }
-}
-
 function drawCore(c, t, s, grow = 1) {
   const ctx = c.getContext('2d');
   ctx.clearRect(0, 0, c.width, c.height);
@@ -165,7 +147,6 @@ function drawCore(c, t, s, grow = 1) {
 
 function drawDetails(c, t, s) {
   const ctx = c.getContext('2d');
-  const hair = 1.1 * dpr;
   ctx.clearRect(0, 0, c.width, c.height);
   for (let i = 0; i < model.cells.length; i++) {
     const cell = model.cells[i];
@@ -176,35 +157,27 @@ function drawDetails(c, t, s) {
       ctx.fillStyle = '#fff'; circle(ctx, x, y, r * 0.2);
     } else if (cell.pip) { ctx.fillStyle = BG; circle(ctx, x, y, r * 0.17); }
   }
+  ctx.fillStyle = 'rgba(255,255,255,.22)';
   for (const b of model.bubbles) {
+    if (!b.grey) continue;
     const [x, y] = px(c, model.bubbleX(b, t, s), model.bubbleY(b, t, s));
-    if (b.grey) { ctx.fillStyle = 'rgba(255,255,255,.22)'; circle(ctx, x, y, 0.3 * unit); }
-    else { ctx.fillStyle = '#fff'; circle(ctx, x, y, 0.06 * unit); }
+    circle(ctx, x, y, 0.3 * unit);
   }
   const sp = model.spread(s);
   for (const p of model.pills) {
+    if (!p.bright) continue;
     const [x, y] = px(c, p.x * sp, p.y * sp);
-    const sw = 0.2 * unit, sl = (p.length - 0.45) * unit;
-    if (p.bright) {
-      const w = 0.62 * unit, len = p.length * unit;
-      ctx.fillStyle = '#fff'; pillPath(ctx, x, y, p.vertical ? w : len, p.vertical ? len : w); ctx.fill();
-      ctx.fillStyle = BG; pillPath(ctx, x, y, p.vertical ? sw : sl, p.vertical ? sl : sw); ctx.fill();
-    } else {
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = hair;
-      pillPath(ctx, x, y, p.vertical ? sw : sl, p.vertical ? sl : sw); ctx.stroke();
-    }
+    const w = 0.62 * unit, len = p.length * unit, sw = 0.2 * unit, sl = (p.length - 0.45) * unit;
+    ctx.fillStyle = '#fff'; pillPath(ctx, x, y, p.vertical ? w : len, p.vertical ? len : w); ctx.fill();
+    ctx.fillStyle = BG; pillPath(ctx, x, y, p.vertical ? sw : sl, p.vertical ? sl : sw); ctx.fill();
   }
-  ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.lineWidth = hair;
-  ctx.beginPath(); ctx.ellipse(c.width / 2, c.height / 2, 3.3 * unit * sp, 5.1 * unit * sp, 0, 0, TAU); ctx.stroke();
-  const a0 = (200 + t * 2) * Math.PI / 180;
-  ctx.beginPath(); ctx.ellipse(c.width / 2, c.height / 2 - 1.2 * unit, 4 * unit * sp, 4.3 * unit * sp, 0, a0, a0 + 140 * Math.PI / 180); ctx.stroke();
 }
 
 const matrixCanvas = document.getElementById('matrix');
 function drawMatrix(t, s) {
   const ctx = matrixCanvas.getContext('2d');
   const n = MATRIX, cell = matrixCanvas.width / n;
-  const frame = renderMatrix(model, t, s);
+  const frame = renderMatrixFrame(model, t, s, performance.now());
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
   for (let i = 0; i < frame.length; i++) {
     const row = Math.floor(i / n), col = i % n, half = (n - 1) / 2;
@@ -221,8 +194,6 @@ function frame(now) {
   const t = (now - t0) / 1000;
   state.level += (state.targetLevel - state.level) * 0.2;
   const s = { mode: state.mode, level: state.level };
-  drawShell(layers.shellFill, t, s, 0, '#fff');
-  drawShell(layers.shellCut, t, s, 1.1 * dpr, BG);
   layers.glow.style.opacity = model.glow(s);
   drawCore(layers.glow, t, s, 1.25);
   drawCore(layers.core, t, s);
@@ -237,6 +208,7 @@ function setMode(mode) {
   state.mode = mode;
   phone.className = 'phone mode-' + mode;
   clearTimeout(infoTimer);
+  matrixFeed.clock = mode === 'info' ? new Date().toTimeString().slice(0, 5) : null;
   if (mode === 'info') { updateInfo(); infoTimer = setTimeout(() => setMode('idle'), 10000); }
   if (mode !== 'listening') state.targetLevel = 0;
   renderCaption();
@@ -277,6 +249,7 @@ let recognizer = null, simTimer = 0, levelTimer = 0;
 function wake() {
   if (state.mode === 'listening') return;
   state.heard = ''; state.reply = '';
+  matrixFeed.message = null;
   setMode('listening');
   startMicLevel();
   if (SR) {
@@ -333,6 +306,7 @@ function finish() {
   setTimeout(() => {
     state.reply = route(state.heard);
     setMode('speaking');
+    matrixSay(state.reply);
     if ('speechSynthesis' in window) {
       const u = new SpeechSynthesisUtterance(state.reply);
       u.onend = () => setTimeout(() => state.mode === 'speaking' && setMode('idle'), 800);
@@ -358,6 +332,7 @@ function route(text) {
 }
 
 function dismiss() {
+  matrixFeed.message = null;
   clearTimeout(simTimer); stopListening();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   setMode('idle');

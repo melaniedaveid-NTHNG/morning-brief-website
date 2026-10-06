@@ -1,10 +1,13 @@
 package tech.nothing.agentos
 
 import android.Manifest
+import android.app.role.RoleManager
+import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -12,7 +15,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -32,9 +34,20 @@ class MainActivity : ComponentActivity() {
     private val vm: AgentViewModel by viewModels()
     private lateinit var buttons: Buttons
 
+    /** Whether the pending microphone request came from waking the agent. */
+    private var wakeAfterMic = false
+
     private val micPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        vm.hasMicPermission = granted
-        if (granted) vm.wake()
+        vm.refreshPermissions()
+        when {
+            granted -> if (wakeAfterMic) vm.wake()
+            // Denied for good: Android won't ask again, so the switch lives in App info.
+            !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO) -> openAppInfo()
+        }
+    }
+
+    private val homeRole = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        vm.refreshPermissions()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,17 +63,22 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.askMicPermission.collect { micPermission.launch(Manifest.permission.RECORD_AUDIO) }
+                vm.askMicPermission.collect { requestMic(wakeAfter = true) }
             }
         }
 
         setContent {
             BackHandler {
                 val ui = vm.ui.value
-                if (ui.drawerOpen) vm.setDrawer(false) else if (ui.mode != Mode.IDLE) vm.dismiss()
+                if (ui.panel != Panel.HOME) vm.openPanel(Panel.HOME) else if (ui.mode != Mode.IDLE) vm.dismiss()
                 // As the home screen there's nothing to go back to: swallow it.
             }
-            AgentScreen(vm)
+            AgentScreen(
+                vm,
+                onRequestMic = { requestMic(wakeAfter = false) },
+                onRequestHome = ::requestHomeRole,
+                onOpen = ::openSafely,
+            )
         }
         handle(intent)
     }
@@ -73,14 +91,14 @@ class MainActivity : ComponentActivity() {
     private fun handle(intent: Intent?) {
         when (intent?.action) {
             ACTION_WAKE, Intent.ACTION_ASSIST, Intent.ACTION_VOICE_COMMAND -> vm.wake()
-            Intent.ACTION_MAIN -> if (intent.hasCategory(Intent.CATEGORY_HOME)) vm.setDrawer(false)
+            // Pressing Home while already home closes whatever panel is open.
+            Intent.ACTION_MAIN -> if (intent.hasCategory(Intent.CATEGORY_HOME)) vm.openPanel(Panel.HOME)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        vm.hasMicPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        vm.refreshPermissions()
         vm.startMatrix()
     }
 
@@ -99,6 +117,31 @@ class MainActivity : ComponentActivity() {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean =
         buttons.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event)
+
+    private fun requestMic(wakeAfter: Boolean) {
+        wakeAfterMic = wakeAfter
+        micPermission.launch(Manifest.permission.RECORD_AUDIO)
+    }
+
+    private fun requestHomeRole() {
+        val roles = getSystemService(ROLE_SERVICE) as RoleManager
+        if (roles.isRoleAvailable(RoleManager.ROLE_HOME) && !roles.isRoleHeld(RoleManager.ROLE_HOME)) {
+            homeRole.launch(roles.createRequestRoleIntent(RoleManager.ROLE_HOME))
+        } else {
+            openSafely(Intent(Settings.ACTION_HOME_SETTINGS))
+        }
+    }
+
+    private fun openAppInfo() =
+        openSafely(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)))
+
+    private fun openSafely(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
+    }
 
     /** Minimal means no chrome: system bars stay hidden until swiped in. */
     private fun immersive() {
