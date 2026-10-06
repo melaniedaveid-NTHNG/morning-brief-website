@@ -1,0 +1,56 @@
+name: Agent OS APK
+
+on:
+  push:
+    paths:
+      - "nothing-os/**"
+      - ".github/workflows/agent-os-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-os-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nothing-os
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Name the APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk agent-os.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-os-apk
+          path: nothing-os/agent-os.apk
+
+      # A fixed release, replaced on every build, gives the phone one stable download link.
+      - name: Publish to the "agent-os-latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete agent-os-latest --yes --cleanup-tag || true
+          gh release create agent-os-latest agent-os.apk \
+            --target "${{ github.sha }}" \
+            --prerelease \
+            --title "Agent OS (latest build)" \
+            --notes "Built from ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}. Download agent-os.apk on the Phone (3) and open it to install."
