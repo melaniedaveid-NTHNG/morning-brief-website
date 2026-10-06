@@ -4,8 +4,24 @@
     {
       "name": "morning-brief-site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8934"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8934"
+      ],
       "port": 8934
+    },
+    {
+      "name": "agent-os-prototype",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8977",
+        "--directory",
+        "nothing-os/prototype"
+      ],
+      "port": 8977
     }
   ]
 }

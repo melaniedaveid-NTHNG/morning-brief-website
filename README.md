@@ -56,3 +56,8 @@ scheduled task later.
 Not set up yet. When ready: a daily scheduled Claude task can gather the
 morning brief + fetch news (via this script or by fetching the feeds directly),
 write the day's JSON into `data/`, and commit/push so GitHub Pages picks it up.
+
+## Agent OS (Nothing Phone 3)
+
+`nothing-os/` contains a separate project: a voice-first home-screen app for the Nothing Phone (3)
+plus a browser prototype of it. See [`nothing-os/README.md`](nothing-os/README.md).

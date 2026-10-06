@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent OS prototype</title>
+<style>
+  :root { --bg: #0e0e0e; --fg: #f2f2f2; --dim: #8a8a8a; --red: #d71921; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #050505; color: var(--fg);
+    font: 13px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  body { display: flex; gap: 32px; align-items: center; justify-content: center; padding: 16px; flex-wrap: wrap; }
+
+  .phone { position: relative; width: min(390px, 100vw - 32px); aspect-ratio: 1080 / 2392;
+    background: var(--bg); border-radius: 44px; overflow: hidden; outline: 1px solid #222;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation; cursor: pointer; }
+  .orb { position: absolute; inset: 6% 0 14% 0; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  .orb canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .goo { filter: url(#goo); }
+  .glow { filter: blur(var(--glow-blur, 18px)); }
+  .phone.mode-info .orb { transform: translateY(-34%) scale(.34); }
+  .phone.mode-listening .orb, .phone.mode-thinking .orb, .phone.mode-speaking .orb { transform: translateY(-6%) scale(1.04); }
+
+  .caption { position: absolute; left: 24px; right: 24px; bottom: 7%; text-align: center;
+    color: var(--dim); letter-spacing: .04em; min-height: 3em; transition: opacity .3s; }
+  .caption .heard { color: var(--fg); }
+  .rec { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--red);
+    margin-right: 8px; vertical-align: 1px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+
+  .info { position: absolute; left: 28px; right: 28px; top: 34%; opacity: 0; transform: translateY(12px);
+    transition: opacity .4s .15s, transform .4s .15s; pointer-events: none; }
+  .phone.mode-info .info { opacity: 1; transform: none; }
+  .info .time { font-size: 72px; line-height: 1; letter-spacing: -.02em; font-weight: 300; }
+  .info .date { color: var(--dim); text-transform: lowercase; margin: 8px 0 28px; letter-spacing: .08em; }
+  .info .row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid #222;
+    text-transform: lowercase; letter-spacing: .06em; }
+  .info .row span:first-child { color: var(--dim); }
+
+  .toast { position: absolute; top: 18px; left: 0; right: 0; text-align: center; color: var(--dim);
+    font-size: 11px; opacity: 0; transition: opacity .3s; }
+  .toast.show { opacity: 1; }
+
+  aside { width: 260px; color: var(--dim); }
+  aside h2 { font-size: 11px; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; color: var(--fg); margin: 24px 0 10px; }
+  aside h2:first-child { margin-top: 0; }
+  #matrix { width: 200px; height: 200px; display: block; background: #000; border-radius: 50%; }
+  kbd { border: 1px solid #333; border-radius: 4px; padding: 0 5px; color: var(--fg); font: inherit; }
+  .keys div { margin: 6px 0; }
+  .keys button { font: inherit; color: var(--fg); background: #151515; border: 1px solid #333; border-radius: 6px;
+    padding: 4px 8px; cursor: pointer; margin: 2px 4px 2px 0; }
+  @media (max-width: 720px) { aside { width: 100%; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="goo" color-interpolation-filters="sRGB">
+    <feGaussianBlur id="gooBlur" stdDeviation="5"/>
+    <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -11.95"/>
+  </filter>
+</svg>
+
+<div class="phone" id="phone">
+  <div class="toast" id="toast"></div>
+  <div class="orb" id="orb">
+    <canvas class="goo" id="shellFill"></canvas>
+    <canvas class="goo" id="shellCut"></canvas>
+    <canvas class="glow" id="glow"></canvas>
+    <canvas class="goo" id="core"></canvas>
+    <canvas id="details"></canvas>
+  </div>
+  <div class="info" id="info">
+    <div class="time" id="infoTime"></div>
+    <div class="date" id="infoDate"></div>
+    <div class="row"><span>battery</span><span id="infoBattery">—</span></div>
+    <div class="row"><span>next alarm</span><span>07:30</span></div>
+    <div class="row"><span>agent</span><span>double tap to talk</span></div>
+  </div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<aside>
+  <h2>Glyph Matrix · 25×25</h2>
+  <canvas id="matrix" width="400" height="400"></canvas>
+  <h2>Gestures</h2>
+  <div>tap · info &nbsp; double tap · agent</div>
+  <h2>Buttons</h2>
+  <div class="keys">
+    <div><kbd>E</kbd> essential key · tap wake, hold to talk</div>
+    <div><kbd>↑</kbd> volume up · tap info</div>
+    <div><kbd>↓</kbd> volume down · tap dismiss</div>
+    <div><kbd>G</kbd> glyph button · long-press wake</div>
+    <div>
+      <button data-key="e">essential</button><button data-key="ArrowUp">vol +</button><button data-key="ArrowDown">vol −</button><button data-key="g">glyph</button>
+    </div>
+  </div>
+  <h2>Try saying</h2>
+  <div>“what time is it” · “battery” · “set a timer for 5 minutes” · “open camera”</div>
+</aside>
+
+<script src="agent.js"></script>
+<script>
+'use strict';
+const model = new AgentModel();
+const phone = document.getElementById('phone');
+const orbEl = document.getElementById('orb');
+const layers = Object.fromEntries(['shellFill', 'shellCut', 'glow', 'core', 'details']
+  .map(id => [id, document.getElementById(id)]));
+const BG = '#0e0e0e';
+
+const state = { mode: 'idle', level: 0, targetLevel: 0, heard: '', reply: '' };
+let infoTimer = 0;
+
+// ---------- rendering ----------
+let unit = 1, dpr = 1;
+function resize() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = orbEl.clientWidth, h = orbEl.clientHeight;
+  for (const c of Object.values(layers)) { c.width = w * dpr; c.height = h * dpr; }
+  unit = Math.min(w / 10, h / 14) * dpr;
+  // CSS filters work in CSS px, so convert the blur back.
+  document.getElementById('gooBlur').setAttribute('stdDeviation', (unit * 0.12 / dpr).toFixed(2));
+  orbEl.style.setProperty('--glow-blur', (unit * 0.55 / dpr).toFixed(1) + 'px');
+}
+window.addEventListener('resize', resize);
+
+function px(c, x, y) { return [c.width / 2 + x * unit, c.height / 2 + y * unit]; }
+function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, TAU); ctx.fill(); }
+function pillPath(ctx, cx, cy, w, h) { ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - h / 2, w, h, Math.min(w, h) / 2); }
+
+function drawShell(c, t, s, inset, color) {
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillStyle = color;
+  for (const b of model.bubbles) {
+    const [x, y] = px(c, model.bubbleX(b, t, s), model.bubbleY(b, t, s));
+    circle(ctx, x, y, model.bubbleR(b, t) * unit - inset);
+  }
+  const sp = model.spread(s);
+  for (const p of model.pills) {
+    const w = 0.62 * unit - 2 * inset, len = p.length * unit - 2 * inset;
+    const [x, y] = px(c, p.x * sp, p.y * sp);
+    pillPath(ctx, x, y, p.vertical ? w : len, p.vertical ? len : w); ctx.fill();
+  }
+}
+
+function drawCore(c, t, s, grow = 1) {
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillStyle = ctx.strokeStyle = '#fff';
+  ctx.lineCap = 'round';
+  for (const l of model.links) {
+    const sc = (model.cellScale(l.a, t, s) + model.cellScale(l.b, t, s)) / 2;
+    ctx.lineWidth = l.width * sc * grow * unit;
+    ctx.beginPath();
+    ctx.moveTo(...px(c, model.cellX(l.a, t, s), model.cellY(l.a, t, s)));
+    ctx.lineTo(...px(c, model.cellX(l.b, t, s), model.cellY(l.b, t, s)));
+    ctx.stroke();
+  }
+  for (let i = 0; i < model.cells.length; i++) {
+    const [x, y] = px(c, model.cellX(i, t, s), model.cellY(i, t, s));
+    circle(ctx, x, y, model.cells[i].r * model.cellScale(i, t, s) * grow * unit);
+  }
+}
+
+function drawDetails(c, t, s) {
+  const ctx = c.getContext('2d');
+  const hair = 1.1 * dpr;
+  ctx.clearRect(0, 0, c.width, c.height);
+  for (let i = 0; i < model.cells.length; i++) {
+    const cell = model.cells[i];
+    const r = cell.r * model.cellScale(i, t, s) * unit;
+    const [x, y] = px(c, model.cellX(i, t, s), model.cellY(i, t, s));
+    if (cell.kind === 'ring') {
+      ctx.fillStyle = BG; circle(ctx, x, y, r * 0.56);
+      ctx.fillStyle = '#fff'; circle(ctx, x, y, r * 0.2);
+    } else if (cell.pip) { ctx.fillStyle = BG; circle(ctx, x, y, r * 0.17); }
+  }
+  for (const b of model.bubbles) {
+    const [x, y] = px(c, model.bubbleX(b, t, s), model.bubbleY(b, t, s));
+    if (b.grey) { ctx.fillStyle = 'rgba(255,255,255,.22)'; circle(ctx, x, y, 0.3 * unit); }
+    else { ctx.fillStyle = '#fff'; circle(ctx, x, y, 0.06 * unit); }
+  }
+  const sp = model.spread(s);
+  for (const p of model.pills) {
+    const [x, y] = px(c, p.x * sp, p.y * sp);
+    const sw = 0.2 * unit, sl = (p.length - 0.45) * unit;
+    if (p.bright) {
+      const w = 0.62 * unit, len = p.length * unit;
+      ctx.fillStyle = '#fff'; pillPath(ctx, x, y, p.vertical ? w : len, p.vertical ? len : w); ctx.fill();
+      ctx.fillStyle = BG; pillPath(ctx, x, y, p.vertical ? sw : sl, p.vertical ? sl : sw); ctx.fill();
+    } else {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = hair;
+      pillPath(ctx, x, y, p.vertical ? sw : sl, p.vertical ? sl : sw); ctx.stroke();
+    }
+  }
+  ctx.strokeStyle = 'rgba(255,255,255,.28)'; ctx.lineWidth = hair;
+  ctx.beginPath(); ctx.ellipse(c.width / 2, c.height / 2, 3.3 * unit * sp, 5.1 * unit * sp, 0, 0, TAU); ctx.stroke();
+  const a0 = (200 + t * 2) * Math.PI / 180;
+  ctx.beginPath(); ctx.ellipse(c.width / 2, c.height / 2 - 1.2 * unit, 4 * unit * sp, 4.3 * unit * sp, 0, a0, a0 + 140 * Math.PI / 180); ctx.stroke();
+}
+
+const matrixCanvas = document.getElementById('matrix');
+function drawMatrix(t, s) {
+  const ctx = matrixCanvas.getContext('2d');
+  const n = MATRIX, cell = matrixCanvas.width / n;
+  const frame = renderMatrix(model, t, s);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+  for (let i = 0; i < frame.length; i++) {
+    const row = Math.floor(i / n), col = i % n, half = (n - 1) / 2;
+    if ((col - half) ** 2 + (row - half) ** 2 > (half + 0.5) ** 2) continue;
+    const v = frame[i] / 255;
+    ctx.fillStyle = `rgba(255,255,255,${0.06 + 0.94 * v})`;
+    ctx.beginPath(); ctx.arc((col + .5) * cell, (row + .5) * cell, cell * 0.36, 0, TAU); ctx.fill();
+  }
+}
+
+const t0 = performance.now();
+let lastMatrix = 0;
+function frame(now) {
+  const t = (now - t0) / 1000;
+  state.level += (state.targetLevel - state.level) * 0.2;
+  const s = { mode: state.mode, level: state.level };
+  drawShell(layers.shellFill, t, s, 0, '#fff');
+  drawShell(layers.shellCut, t, s, 1.1 * dpr, BG);
+  layers.glow.style.opacity = model.glow(s);
+  drawCore(layers.glow, t, s, 1.25);
+  drawCore(layers.core, t, s);
+  drawDetails(layers.details, t, s);
+  if (now - lastMatrix > 66) { drawMatrix(t, s); lastMatrix = now; } // ~15 fps, like the device
+  requestAnimationFrame(frame);
+}
+
+// ---------- state ----------
+const caption = document.getElementById('caption');
+function setMode(mode) {
+  state.mode = mode;
+  phone.className = 'phone mode-' + mode;
+  clearTimeout(infoTimer);
+  if (mode === 'info') { updateInfo(); infoTimer = setTimeout(() => setMode('idle'), 10000); }
+  if (mode !== 'listening') state.targetLevel = 0;
+  renderCaption();
+}
+function renderCaption() {
+  const esc = s => s.replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[ch]);
+  caption.innerHTML = {
+    idle: '',
+    info: '',
+    listening: `<span class="rec"></span>${state.heard ? `<span class="heard">${esc(state.heard)}</span>` : 'listening'}`,
+    thinking: `<span class="heard">${esc(state.heard)}</span>`,
+    speaking: esc(state.reply),
+  }[state.mode];
+}
+
+function updateInfo() {
+  const d = new Date();
+  document.getElementById('infoTime').textContent = d.toTimeString().slice(0, 5);
+  document.getElementById('infoDate').textContent =
+    d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+  if (navigator.getBattery) navigator.getBattery().then(b => {
+    document.getElementById('infoBattery').textContent = Math.round(b.level * 100) + '%' + (b.charging ? ' · charging' : '');
+  });
+}
+setInterval(() => state.mode === 'info' && updateInfo(), 1000);
+
+const toastEl = document.getElementById('toast');
+let toastTimer = 0;
+function toast(msg) {
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1600);
+}
+
+// ---------- voice ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognizer = null, simTimer = 0, levelTimer = 0;
+
+function wake() {
+  if (state.mode === 'listening') return;
+  state.heard = ''; state.reply = '';
+  setMode('listening');
+  startMicLevel();
+  if (SR) {
+    recognizer = new SR();
+    recognizer.interimResults = true; recognizer.lang = 'en-GB';
+    recognizer.onresult = e => {
+      state.heard = [...e.results].map(r => r[0].transcript).join('');
+      renderCaption();
+      if (e.results[e.results.length - 1].isFinal) finish();
+    };
+    recognizer.onaudiostart = () => clearTimeout(simTimer);
+    recognizer.onerror = () => { if (!state.heard) simulate(); };
+    recognizer.onend = () => { if (state.mode === 'listening') state.heard ? finish() : simulate(); };
+    try { recognizer.start(); } catch { simulate(); }
+    // Some browsers accept start() and then never hear anything (no mic, headless): fall back.
+    simTimer = setTimeout(() => { if (!state.heard) { stopListening(); simulate(); } }, 2500);
+  } else simulate();
+}
+
+// No mic / no speech API (e.g. desktop Firefox): fake a short utterance so the flow is visible.
+function simulate() {
+  clearTimeout(simTimer);
+  const phrase = 'what time is it';
+  let i = 0;
+  const tick = () => {
+    if (state.mode !== 'listening') return;
+    state.targetLevel = 0.4 + 0.5 * Math.random();
+    state.heard = phrase.slice(0, i += 2); renderCaption();
+    simTimer = setTimeout(i >= phrase.length ? finish : tick, i >= phrase.length ? 500 : 90);
+  };
+  simTimer = setTimeout(tick, 700);
+}
+
+function startMicLevel() {
+  clearInterval(levelTimer);
+  levelTimer = setInterval(() => {
+    if (state.mode !== 'listening') return clearInterval(levelTimer);
+    state.targetLevel = Math.max(0, state.targetLevel * 0.85 + (Math.random() < 0.3 ? Math.random() * 0.5 : 0));
+  }, 80);
+}
+
+function stopListening() {
+  if (!recognizer) return;
+  const r = recognizer; recognizer = null;
+  r.onresult = r.onerror = r.onend = r.onaudiostart = null;
+  try { r.abort(); } catch {}
+}
+
+function finish() {
+  if (state.mode !== 'listening') return;
+  clearTimeout(simTimer); stopListening();
+  if (!state.heard.trim()) return setMode('idle');
+  setMode('thinking');
+  setTimeout(() => {
+    state.reply = route(state.heard);
+    setMode('speaking');
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(state.reply);
+      u.onend = () => setTimeout(() => state.mode === 'speaking' && setMode('idle'), 800);
+      speechSynthesis.speak(u);
+    }
+    setTimeout(() => state.mode === 'speaking' && setMode('idle'), 3500 + state.reply.length * 40);
+  }, 700);
+}
+
+// Port of voice/CommandRouter.kt (replies only — the prototype can't drive a phone).
+function route(text) {
+  const q = text.toLowerCase().trim();
+  let m;
+  if (/\b(time)\b/.test(q)) return `It's ${new Date().toTimeString().slice(0, 5)}.`;
+  if (/\b(date|day is it|today)\b/.test(q)) return `It's ${new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}.`;
+  if (/\bbattery\b/.test(q)) return 'Battery is at 82 percent.';
+  if ((m = q.match(/timer for (\d+) (second|minute|hour)/))) return `Timer set for ${m[1]} ${m[2]}${m[1] === '1' ? '' : 's'}.`;
+  if (/(torch|flashlight)/.test(q)) return /off/.test(q) ? 'Torch off.' : 'Torch on.';
+  if ((m = q.match(/^(open|launch|start) (.+)/))) return `Opening ${m[2]}.`;
+  if (/\b(info|status|overview)\b/.test(q)) { setTimeout(() => setMode('info'), 900); return 'Here you go.'; }
+  if (/\b(never ?mind|cancel|stop)\b/.test(q)) return 'Okay.';
+  return `Searching for “${text}”.`;
+}
+
+function dismiss() {
+  clearTimeout(simTimer); stopListening();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  setMode('idle');
+}
+
+// ---------- input ----------
+// Tap vs double tap: wait one double-tap window before treating it as a single tap.
+let tapTimer = 0;
+phone.addEventListener('click', () => {
+  if (tapTimer) { clearTimeout(tapTimer); tapTimer = 0; wake(); return; }
+  tapTimer = setTimeout(() => {
+    tapTimer = 0;
+    if (state.mode === 'listening') finish();
+    else if (state.mode === 'idle') setMode('info');
+    else dismiss();
+  }, 260);
+});
+
+// Buttons: tap vs hold, the same rule as input/Buttons.kt.
+const HOLD_MS = 400;
+const held = {};
+function keyDown(k) {
+  if (held[k]) return;
+  held[k] = { at: Date.now(), long: false };
+  held[k].timer = setTimeout(() => {
+    held[k].long = true;
+    if (k === 'e') { toast('essential · hold to talk'); wake(); }
+    if (k === 'g') { toast('glyph button · long press'); wake(); }
+    if (k === 'ArrowUp' || k === 'ArrowDown') toast(k === 'ArrowUp' ? 'volume +' : 'volume −');
+  }, HOLD_MS);
+}
+function keyUp(k) {
+  const h = held[k]; if (!h) return;
+  clearTimeout(h.timer); delete held[k];
+  if (h.long) { if (k === 'e' && state.mode === 'listening') finish(); return; }
+  if (k === 'e') { toast('essential'); state.mode === 'listening' ? finish() : wake(); }
+  if (k === 'ArrowUp') { toast('volume up'); setMode(state.mode === 'info' ? 'idle' : 'info'); }
+  if (k === 'ArrowDown') { toast('volume down'); dismiss(); }
+  if (k === 'g') toast('glyph button · next toy');
+}
+const KEYS = ['e', 'g', 'ArrowUp', 'ArrowDown'];
+const norm = k => k.length === 1 ? k.toLowerCase() : k;
+addEventListener('keydown', e => { if (KEYS.includes(norm(e.key))) { e.preventDefault(); keyDown(norm(e.key)); } });
+addEventListener('keyup', e => { if (KEYS.includes(norm(e.key))) keyUp(norm(e.key)); });
+for (const b of document.querySelectorAll('[data-key]')) {
+  b.addEventListener('pointerdown', e => { e.preventDefault(); keyDown(b.dataset.key); });
+  b.addEventListener('pointerup', () => keyUp(b.dataset.key));
+  b.addEventListener('pointerleave', () => keyUp(b.dataset.key));
+}
+
+resize();
+setMode(new URLSearchParams(location.search).get('mode') || 'idle');
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
