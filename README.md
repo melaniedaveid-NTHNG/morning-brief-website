@@ -5,6 +5,19 @@ A small mobile-first site that shows today's brief plus the latest 3 articles fr
 around as a browsable library. The header shows a small live London weather
 reading (via the free [Open-Meteo](https://open-meteo.com/) API, no key needed).
 
+## Layout
+
+The page uses a phone-style "split" layout. The upper part is a blank, covered
+panel, and the app sits in the bottom part:
+
+- **Status row**: a live clock, the weather and countdown (they update in the
+  background), plus a radio toggle and a mic for voice commands ("today",
+  "library", "radio", "stop"). Voice works only where the Web Speech API is
+  available.
+- **Assistant feedback area**: the brief and news scroll here over a soft glow.
+- **Main actions pill**: the current view's name, plus ≡ for the library and +
+  to go back to today.
+
 ## Structure
 
 - `index.html`, `assets/` — the static site (no build step, no frameworks)

@@ -5,67 +5,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Morning Brief</title>
 <meta name="description" content="Daily morning brief and tech news library.">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#1f1f1f">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Questrial&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <div class="app">
-  <header class="hero">
-    <div class="hero-grain" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="hero-top">
-        <div class="hero-top-left">
-          <span class="brand"><span class="dot" aria-hidden="true"></span>Morning&nbsp;Brief</span>
-          <span class="weather-chip" id="weather-chip" aria-live="polite"></span>
-          <span class="countdown-chip" id="countdown-chip" aria-live="polite"></span>
-        </div>
-        <div class="hero-top-right">
-          <button id="radio-toggle" class="pill-btn" type="button" aria-label="Play radioeins livestream">
-            <span id="radio-toggle-label">&#9654; radioeins</span>
-          </button>
-        </div>
+  <!-- Upper part of the split: intentionally covered. -->
+  <div class="cover" aria-hidden="true"></div>
+
+  <section class="panel">
+    <header class="status-row">
+      <time class="clock" id="clock" aria-live="off">--:--</time>
+      <div class="status-area" aria-live="polite">
+        <span id="weather-chip"></span>
+        <span id="countdown-chip"></span>
       </div>
-    </div>
-    <audio id="radio-audio" preload="none"></audio>
-  </header>
-
-  <nav class="tabs-bar" role="tablist" aria-label="View">
-    <button class="tab active" data-view="today" role="tab" aria-selected="true">Today</button>
-    <button class="tab" data-view="library" role="tab" aria-selected="false">Library</button>
-  </nav>
-
-  <main id="main">
-    <section id="view-today" class="view" data-view-panel="today">
-      <div id="today-content" class="day-content">
-        <p class="loading">Loading today&rsquo;s brief&hellip;</p>
+      <div class="status-icons">
+        <button id="radio-toggle" class="icon-btn" type="button" aria-label="Play radioeins livestream" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <rect x="3.5" y="5" width="17" height="9" rx="4.5"/>
+            <path d="M6 17.5h12M8 20.5h8"/>
+          </svg>
+        </button>
+        <button id="voice-toggle" class="icon-btn" type="button" aria-label="Voice command" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <rect x="9.5" y="2.5" width="5" height="13" rx="2.5"/>
+            <path d="M12 15.5v6M8 21.5h8"/>
+          </svg>
+        </button>
       </div>
-    </section>
+      <audio id="radio-audio" preload="none"></audio>
+    </header>
 
-    <section id="view-library" class="view" data-view-panel="library" hidden>
-      <div class="library-layout">
+    <div class="glow" aria-hidden="true"></div>
+
+    <main class="feedback" id="main">
+      <p class="voice-hint" id="voice-hint" hidden></p>
+
+      <section id="view-today" class="view" data-view-panel="today">
+        <div id="today-content" class="day-content">
+          <p class="loading">Loading today&rsquo;s brief&hellip;</p>
+        </div>
+      </section>
+
+      <section id="view-library" class="view" data-view-panel="library" hidden>
         <ul class="library-days" id="library-days" aria-label="Past briefings">
           <li class="loading">Loading library&hellip;</li>
         </ul>
-        <div class="library-detail" id="library-detail">
-          <p class="empty-state">Pick a day to see what happened.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+        <div class="library-detail" id="library-detail"></div>
+      </section>
+    </main>
 
-  <footer class="app-footer">
-    <div class="app-footer-sources">
-      <span class="dot dot-sm" aria-hidden="true"></span>
-      <p>Sources — The Verge, MIT Technology Review, Wired</p>
-    </div>
-    <button id="theme-toggle" class="pill-btn pill-btn-alt" type="button" aria-label="Toggle theme">
-      <span id="theme-toggle-label">Dark</span>
-    </button>
-  </footer>
+    <nav class="actions" aria-label="Main actions">
+      <span class="actions-label" id="actions-label">Today&rsquo;s brief</span>
+      <button class="icon-btn" type="button" data-view="library" aria-label="Library">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M4 8h16M4 12h16M4 16h16"/>
+        </svg>
+      </button>
+      <button class="icon-btn" type="button" data-view="today" aria-label="Today">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </button>
+    </nav>
+  </section>
 </div>
 
 <template id="day-template">

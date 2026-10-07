@@ -193,7 +193,6 @@
         listEl.appendChild(li);
       });
       libraryLoaded = true;
-      await selectLibraryDay(dates[0]);
     } catch (err) {
       listEl.innerHTML = `<li class="error-state">Couldn’t load library: ${err.message}</li>`;
     }
@@ -202,6 +201,8 @@
   async function selectLibraryDay(isoDate) {
     const listEl = $("#library-days");
     const detailEl = $("#library-detail");
+    listEl.hidden = true;
+    $("#actions-label").textContent = formatDateListItem(isoDate);
     listEl.querySelectorAll(".library-day").forEach((el) => {
       el.classList.toggle("active", el.dataset.date === isoDate);
     });
@@ -215,49 +216,96 @@
     }
   }
 
+  const VIEW_LABELS = { today: "Today\u2019s brief", library: "Library" };
+
   function setView(view) {
-    document.querySelectorAll(".tab").forEach((tab) => {
-      const active = tab.dataset.view === view;
-      tab.classList.toggle("active", active);
-      tab.setAttribute("aria-selected", String(active));
+    document.querySelectorAll(".actions [data-view]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.view === view);
     });
     document.querySelectorAll(".view").forEach((panel) => {
       panel.hidden = panel.dataset.viewPanel !== view;
     });
+    $("#actions-label").textContent = VIEW_LABELS[view] || "";
+    $("#main").scrollTop = 0;
     if (view === "library") {
+      // Always land on the list of days; picking one swaps it for that day.
+      $("#library-days").hidden = false;
+      $("#library-detail").innerHTML = "";
       renderLibrary();
     }
   }
 
-  function currentTheme() {
-    return document.documentElement.getAttribute("data-theme") ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-  }
-
-  function updateThemeLabel() {
-    const label = $("#theme-toggle-label");
-    if (label) label.textContent = currentTheme() === "dark" ? "Light" : "Dark";
-  }
-
-  function initTheme() {
-    const stored = (() => {
-      try { return localStorage.getItem("mb-theme"); } catch { return null; }
-    })();
-    if (stored === "light" || stored === "dark") {
-      document.documentElement.setAttribute("data-theme", stored);
-    }
-    updateThemeLabel();
-    $("#theme-toggle").addEventListener("click", () => {
-      const next = currentTheme() === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      try { localStorage.setItem("mb-theme", next); } catch { /* ignore */ }
-      updateThemeLabel();
+  function initActions() {
+    document.querySelectorAll(".actions [data-view]").forEach((btn) => {
+      btn.addEventListener("click", () => setView(btn.dataset.view));
     });
   }
 
-  function initTabs() {
-    document.querySelectorAll(".tab").forEach((tab) => {
-      tab.addEventListener("click", () => setView(tab.dataset.view));
+  function updateClock() {
+    const el = $("#clock");
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mm = String(now.getMinutes()).padStart(2, "0");
+    el.textContent = `${hh}:${mm}`;
+    el.dateTime = now.toISOString();
+  }
+
+  function initClock() {
+    updateClock();
+    setInterval(updateClock, 1000);
+  }
+
+  // Voice commands: "today", "library", "radio" / "stop".
+  function initVoice() {
+    const btn = $("#voice-toggle");
+    const hint = $("#voice-hint");
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+      btn.disabled = true;
+      btn.title = "Voice not supported in this browser";
+      return;
+    }
+
+    const showHint = (text) => {
+      hint.textContent = text;
+      hint.hidden = !text;
+    };
+
+    const rec = new Recognition();
+    rec.lang = "en-GB";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    let listening = false;
+
+    rec.addEventListener("start", () => {
+      listening = true;
+      btn.setAttribute("aria-pressed", "true");
+      showHint("Listening\u2026 try \u201ctoday\u201d, \u201clibrary\u201d or \u201cradio\u201d");
+    });
+    rec.addEventListener("end", () => {
+      listening = false;
+      btn.setAttribute("aria-pressed", "false");
+      setTimeout(() => { if (!listening) showHint(""); }, 1800);
+    });
+    rec.addEventListener("error", () => showHint("Didn\u2019t catch that."));
+    rec.addEventListener("result", (event) => {
+      const said = (event.results[0]?.[0]?.transcript || "").toLowerCase();
+      showHint(`\u201c${said}\u201d`);
+      const audio = $("#radio-audio");
+      if (said.includes("library") || said.includes("past")) {
+        setView("library");
+      } else if (said.includes("today") || said.includes("brief") || said.includes("news")) {
+        setView("today");
+      } else if (said.includes("stop") || said.includes("pause")) {
+        if (!audio.paused) $("#radio-toggle").click();
+      } else if (said.includes("radio") || said.includes("music")) {
+        if (audio.paused) $("#radio-toggle").click();
+      }
+    });
+
+    btn.addEventListener("click", () => {
+      if (listening) rec.stop();
+      else rec.start();
     });
   }
 
@@ -297,34 +345,29 @@
 
   function initRadio() {
     const btn = $("#radio-toggle");
-    const label = $("#radio-toggle-label");
     const audio = $("#radio-audio");
     if (!btn || !audio) return;
 
-    const setLabel = (text) => { if (label) label.textContent = text; };
+    const setState = (playing, label) => {
+      btn.setAttribute("aria-pressed", String(playing));
+      btn.setAttribute("aria-label", label);
+      btn.title = label;
+    };
 
-    audio.addEventListener("waiting", () => setLabel("▶ Loading…"));
-    audio.addEventListener("playing", () => {
-      btn.classList.add("playing");
-      setLabel("■ radioeins");
-    });
-    audio.addEventListener("pause", () => {
-      btn.classList.remove("playing");
-      setLabel("▶ radioeins");
-    });
-    audio.addEventListener("error", () => {
-      btn.classList.remove("playing");
-      setLabel("radioeins unavailable");
-      setTimeout(() => setLabel("▶ radioeins"), 3000);
-    });
+    const fail = () => {
+      setState(false, "radioeins unavailable");
+      setTimeout(() => setState(false, "Play radioeins livestream"), 3000);
+    };
+
+    audio.addEventListener("waiting", () => btn.setAttribute("aria-label", "Loading radioeins\u2026"));
+    audio.addEventListener("playing", () => setState(true, "Stop radioeins"));
+    audio.addEventListener("pause", () => setState(false, "Play radioeins livestream"));
+    audio.addEventListener("error", fail);
 
     btn.addEventListener("click", () => {
       if (audio.paused) {
         if (!audio.src) audio.src = RADIO_STREAM_URL;
-        audio.play().catch(() => {
-          setLabel("radioeins unavailable");
-          setTimeout(() => setLabel("▶ radioeins"), 3000);
-        });
+        audio.play().catch(fail);
       } else {
         audio.pause();
       }
@@ -369,7 +412,7 @@
     } else {
       text = `Leave in ${s}s`;
     }
-    el.textContent = `${text} · 8:50 departure`;
+    el.textContent = `${text} · 8:50`;
   }
 
   function initCountdown() {
@@ -379,9 +422,10 @@
   }
 
   function init() {
-    initTheme();
-    initTabs();
+    initClock();
+    initActions();
     initRadio();
+    initVoice();
     initCountdown();
     renderWeather();
     renderToday();
