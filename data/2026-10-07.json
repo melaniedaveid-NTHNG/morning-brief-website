@@ -3,8 +3,7 @@
   "brief": {
     "calendar": [],
     "attention": [
-      "Slack: Ben flagged that the Chansey inbound contacts still don't know who they should be speaking to — may need your steer",
-      "GitHub: the Agent OS APK build failed twice yesterday on claude/nifty-thompson-89uvtk — worth a look"
+      "Slack: Ben flagged that the Chansey inbound contacts still don't know who they should be speaking to — may need your steer"
     ]
   },
   "news": {
@@ -78,5 +77,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-07T00:36:10Z"
+  "generated_at": "2026-10-07T02:36:01Z"
 }
