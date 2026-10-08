@@ -5,10 +5,7 @@
       "9:00 AM – New Event",
       "10:15 AM – Melanie / Joseph 1:1"
     ],
-    "attention": [
-      "Slack: A teammate in #cresselia asked if Melanie knows the status of the \"balance\" feature and whether there's software to test it",
-      "Email: Expense report ER36449031 was rejected — needs resubmission without the June gym charge"
-    ]
+    "attention": []
   },
   "news": {
     "verge": {
@@ -81,5 +78,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-08T10:15:00Z"
+  "generated_at": "2026-10-08T12:35:41Z"
 }
