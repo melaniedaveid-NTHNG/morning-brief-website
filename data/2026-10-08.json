@@ -5,9 +5,7 @@
       "9:00 AM – New Event",
       "10:15 AM – Melanie / Joseph 1:1"
     ],
-    "attention": [
-      "Slack: Jelena asked in #cresselia if you know about work on the \"balance\" feature and testable software"
-    ]
+    "attention": []
   },
   "news": {
     "verge": {
@@ -80,5 +78,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-08T00:35:44Z"
+  "generated_at": "2026-10-08T02:36:07Z"
 }
