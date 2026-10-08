@@ -5,9 +5,7 @@
       "9:00 AM – New Event",
       "10:15 AM – Melanie / Joseph 1:1"
     ],
-    "attention": [
-      "Slack: Lauren asked the team (you included) to flag any changes needed to the agenda for Carl's visit next Thursday"
-    ]
+    "attention": []
   },
   "news": {
     "verge": {
@@ -80,5 +78,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-08T18:35:29Z"
+  "generated_at": "2026-10-08T22:35:39Z"
 }
