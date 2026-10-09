@@ -1,7 +1,9 @@
 {
   "date": "2026-10-09",
   "brief": {
-    "calendar": [],
+    "calendar": [
+      "5:00 PM – AI hardware mockup discussion"
+    ],
     "attention": [
       "Slack: a teammate in #cresselia asked if Melanie is in the loop on the \"balance\" feature work and whether there's software to test it",
       "Slack: Lauren Carr shared the agenda for next Thursday's Carl visit in #design-reviews and asked the team to flag any problems with it"
@@ -78,5 +80,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-09T18:42:00Z"
+  "generated_at": "2026-10-09T23:30:00Z"
 }
