@@ -3,7 +3,8 @@
   "brief": {
     "calendar": [],
     "attention": [
-      "Email: ADP rejected your expense reimbursement (ER36449031) — remove the June gym charge and resubmit"
+      "Slack: a teammate in #cresselia asked if Melanie is in the loop on the \"balance\" feature work and whether there's software to test it",
+      "Slack: Lauren Carr shared the agenda for next Thursday's Carl visit in #design-reviews and asked the team to flag any problems with it"
     ]
   },
   "news": {
@@ -77,5 +78,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-09T00:35:49Z"
+  "generated_at": "2026-10-09T18:42:00Z"
 }
