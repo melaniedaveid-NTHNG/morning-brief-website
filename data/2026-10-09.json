@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-09",
+  "brief": {
+    "calendar": [],
+    "attention": [
+      "Email: ADP rejected your expense reimbursement (ER36449031) — remove the June gym charge and resubmit"
+    ]
+  },
+  "news": {
+    "verge": {
+      "source": "The Verge",
+      "items": [
+        {
+          "title": "Waymo is offering transit discounts again, this time with Visa",
+          "url": "https://www.theverge.com/transportation/998184/waymo-public-transportation-discount-subway-bus-visa",
+          "summary": "Waymo has made several attempts over the years at offering transit discounts to its customers in the hopes of getting them to more frequently use the company's robotaxis to connect with a train or a bus. The...",
+          "published": "2026-09-22T09:00:00-04:00"
+        },
+        {
+          "title": "These discreet hearing aid glasses now have better voice boosting and battery life",
+          "url": "https://www.theverge.com/tech/998243/essilorluxottica-nuance-audio-plus-otc-hearing-aid-glasses",
+          "summary": "EssilorLuxottica, the company that Meta partnered with for its Ray-Ban smart glasses, announced a new version of its Nuance Audio glasses that are designed to double as discreet over-the-counter hearing aids. The new...",
+          "published": "2026-09-22T09:00:00-04:00"
+        },
+        {
+          "title": "Oppo’s new phone is the first with three 200-megapixel cameras",
+          "url": "https://www.theverge.com/gadgets/998688/oppo-find-x10-pro-max-200-megapixel-cameras-china",
+          "summary": "Oppo's new Find X10 Pro Max flagship phone, launched today in China, is the first anywhere to use 200-megapixel sensors on all three of its rear cameras. A 17-stop dynamic range for the main camera, delivered thanks...",
+          "published": "2026-09-22T08:18:35-04:00"
+        }
+      ]
+    },
+    "mit_tech_review": {
+      "source": "MIT Technology Review",
+      "items": [
+        {
+          "title": "The Download: why AI’s latest breakthroughs and fears may be more hype than reality",
+          "url": "https://www.technologyreview.com/2026/09/22/1144910/the-download-dont-believe-ai-hype/",
+          "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Don’t be fooled by this summer of AI hype —Timnit Gebru, executive director of...",
+          "published": "Tue, 22 Sep 2026 12:10:00 +0000"
+        },
+        {
+          "title": "Don’t be fooled by this summer of AI hype",
+          "url": "https://www.technologyreview.com/2026/09/22/1144867/dont-be-fooled-summer-ai-hype/",
+          "summary": "It’s been a busy few months for AI hype. At the end of April, Anthropic claimed that its model Claude Mythos is better at finding software vulnerabilities than most security experts. Then we had the OpenAI–Hugging...",
+          "published": "Tue, 22 Sep 2026 11:04:51 +0000"
+        },
+        {
+          "title": "The Download: investigating deaths at the US border’s “virtual wall”",
+          "url": "https://www.technologyreview.com/2026/09/21/1144834/the-download-investigating-deaths-at-the-us-borders-virtual-wall/",
+          "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. The US spent billions on border surveillance. Why can’t it catch people before...",
+          "published": "Mon, 21 Sep 2026 12:20:00 +0000"
+        }
+      ]
+    },
+    "wired": {
+      "source": "Wired",
+      "items": [
+        {
+          "title": "Viture’s Vonder Glasses Are Meant to Map Your Mind",
+          "url": "https://www.wired.com/story/viture-vonder-glasses-are-meant-to-map-your-mind/",
+          "summary": "No cameras? No problem. Viture’s first display-free smart glasses have bone-conduction microphones to privately record your daily musings.",
+          "published": "Tue, 22 Sep 2026 13:00:00 +0000"
+        },
+        {
+          "title": "Adobe Premiere, One of the iPhone’s Best Video-Editing Apps, Is Now on Android",
+          "url": "https://www.wired.com/story/adobe-premiere-now-on-android/",
+          "summary": "The Android version of Premiere has unique layouts on candy bar phones and foldable devices. It’s free to use and available today.",
+          "published": "Tue, 22 Sep 2026 13:00:00 +0000"
+        },
+        {
+          "title": "AI Models Built From Rat Brains Just Got Closer to Reality",
+          "url": "https://www.wired.com/story/ai-models-built-from-rat-brains-are-about-to-become-a-reality/",
+          "summary": "The Biological Computing Company is bringing its AI tools to Amazon Web Services in a major boost for a once-fringe field that aims to marry nature with code.",
+          "published": "Tue, 22 Sep 2026 13:00:00 +0000"
+        }
+      ]
+    }
+  },
+  "generated_at": "2026-10-09T00:35:49Z"
+}
