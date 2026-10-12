@@ -2,9 +2,12 @@
   "date": "2026-10-12",
   "brief": {
     "calendar": [
-      "3:30 PM – Chansey ID Status Check in"
+      "3:30 PM \u2013 Chansey ID Status Check in"
     ],
-    "attention": []
+    "attention": [
+      "Email: Expense report ER36449031 was rejected (remove the June gym charge) and needs resubmission",
+      "Slack: In #cresselia, a teammate asked if Melanie has visibility into the 'balance' feature work"
+    ]
   },
   "news": {
     "verge": {
@@ -36,13 +39,13 @@
         {
           "title": "The Download: why AI's latest breakthroughs and fears may be more hype than reality",
           "url": "https://www.technologyreview.com/2026/09/22/1144910/the-download-dont-believe-ai-hype/",
-          "summary": "This is today's edition of The Download, our weekday newsletter that provides a daily dose of what's going on in the world of technology. Don't be fooled by this summer of AI hype —Timnit Gebru, executive director of...",
+          "summary": "This is today's edition of The Download, our weekday newsletter that provides a daily dose of what's going on in the world of technology. Don't be fooled by this summer of AI hype \u2014Timnit Gebru, executive director of...",
           "published": "Tue, 22 Sep 2026 12:10:00 +0000"
         },
         {
           "title": "Don't be fooled by this summer of AI hype",
           "url": "https://www.technologyreview.com/2026/09/22/1144867/dont-be-fooled-summer-ai-hype/",
-          "summary": "It's been a busy few months for AI hype. At the end of April, Anthropic claimed that its model Claude Mythos is better at finding software vulnerabilities than most security experts. Then we had the OpenAI–Hugging...",
+          "summary": "It's been a busy few months for AI hype. At the end of April, Anthropic claimed that its model Claude Mythos is better at finding software vulnerabilities than most security experts. Then we had the OpenAI\u2013Hugging...",
           "published": "Tue, 22 Sep 2026 11:04:51 +0000"
         },
         {
@@ -77,5 +80,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-12T00:35:46Z"
+  "generated_at": "2026-10-12T02:36:17Z"
 }
