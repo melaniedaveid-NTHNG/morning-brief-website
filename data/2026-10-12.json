@@ -5,8 +5,7 @@
       "3:30 PM \u2013 Chansey ID Status Check in"
     ],
     "attention": [
-      "Email: Expense report ER36449031 was rejected (remove the June gym charge) and needs resubmission",
-      "Slack: In #cresselia, a teammate asked if Melanie has visibility into the 'balance' feature work"
+      "Email: Expense report ER36449031 was rejected (remove the June gym charge) and needs resubmission"
     ]
   },
   "news": {
@@ -80,5 +79,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-12T02:36:17Z"
+  "generated_at": "2026-10-12T04:35:35Z"
 }
