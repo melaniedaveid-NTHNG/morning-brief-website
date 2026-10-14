@@ -2,7 +2,11 @@
   "date": "2026-10-14",
   "brief": {
     "calendar": [],
-    "attention": []
+    "attention": [
+      "Slack: #design-reviews run-through this morning (9:30–10:30) to prep for Carl's visit Thursday — Melanie is presenting to Fraser as stand-in Carl",
+      "Slack: Kevin Hoffman asked for Melanie's take on the Chansey UX story direction (desktop extender vs. mini phone) ahead of Carl's visit",
+      "Email: 3 new Figma comments from Hunaid Nagaria and kevin.hoffman on the Caterpie / Charizard file"
+    ]
   },
   "news": {
     "verge": {
@@ -34,13 +38,13 @@
         {
           "title": "The Download: why AI's latest breakthroughs and fears may be more hype than reality",
           "url": "https://www.technologyreview.com/2026/09/22/1144910/the-download-dont-believe-ai-hype/",
-          "summary": "This is today's edition of The Download, our weekday newsletter that provides a daily dose of what's going on in the world of technology. Don't be fooled by this summer of AI hype \u2014Timnit Gebru, executive director of...",
+          "summary": "This is today's edition of The Download, our weekday newsletter that provides a daily dose of what's going on in the world of technology. Don't be fooled by this summer of AI hype —Timnit Gebru, executive director of...",
           "published": "Tue, 22 Sep 2026 12:10:00 +0000"
         },
         {
           "title": "Don't be fooled by this summer of AI hype",
           "url": "https://www.technologyreview.com/2026/09/22/1144867/dont-be-fooled-summer-ai-hype/",
-          "summary": "It's been a busy few months for AI hype. At the end of April, Anthropic claimed that its model Claude Mythos is better at finding software vulnerabilities than most security experts. Then we had the OpenAI\u2013Hugging...",
+          "summary": "It's been a busy few months for AI hype. At the end of April, Anthropic claimed that its model Claude Mythos is better at finding software vulnerabilities than most security experts. Then we had the OpenAI–Hugging...",
           "published": "Tue, 22 Sep 2026 11:04:51 +0000"
         },
         {
@@ -75,5 +79,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-14T02:36:16Z"
+  "generated_at": "2026-10-14T04:35:27Z"
 }
