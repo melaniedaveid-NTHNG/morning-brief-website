@@ -2,7 +2,10 @@
   "date": "2026-10-16",
   "brief": {
     "calendar": [],
-    "attention": []
+    "attention": [
+      "Slack: Philipp still can't confirm travel dates — says he can't go before Nov 9, group trip unresolved",
+      "Slack: TJ Chen asked about grabbing coffee at Frequency, still awaiting your reply"
+    ]
   },
   "news": {
     "verge": {
@@ -75,5 +78,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-16T09:00:00Z"
+  "generated_at": "2026-10-16T12:35:34Z"
 }
