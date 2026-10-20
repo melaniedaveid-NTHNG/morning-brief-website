@@ -5,7 +5,10 @@
       "3:00 PM – Nothing / Google - Gemini Enterprise follow up"
     ],
     "attention": [
-      "Email: Lian Han (OpenAI) wants to connect and schedule next steps on the MDNA thread"
+      "Email: Lian Han (OpenAI) wants to connect and schedule next steps on the MDNA thread",
+      "Slack: Joseph Horton is waiting for you outside on the terrace",
+      "Slack: Hannah Speller asked in #design-reviews who has items for PVL Time tomorrow",
+      "Slack: Fraser asked for help with the Sainsbury's delivery"
     ]
   },
   "news": {
@@ -79,5 +82,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-20T08:35:33Z"
+  "generated_at": "2026-10-20T18:36:20Z"
 }
