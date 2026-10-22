@@ -6,7 +6,9 @@
       "1:00 PM – 1:1 Melanie",
       "1:30 PM – melanie x philipp 1:1"
     ],
-    "attention": []
+    "attention": [
+      "Slack: Hannah Daled checked in asking how you're doing after yesterday"
+    ]
   },
   "news": {
     "verge": {
@@ -79,5 +81,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-22T12:36:26Z"
+  "generated_at": "2026-10-22T14:30:00Z"
 }
