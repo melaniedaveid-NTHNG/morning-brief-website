@@ -3,11 +3,10 @@
   "brief": {
     "calendar": [
       "10:15 AM – Melanie / Joseph 1:1",
-      "1:00 PM – 1:1 Melanie"
+      "1:00 PM – 1:1 Melanie",
+      "1:30 PM – melanie x philipp 1:1"
     ],
-    "attention": [
-      "Slack: Philipp asked to push your call today to 1:30–2pm instead of 1pm"
-    ]
+    "attention": []
   },
   "news": {
     "verge": {
@@ -80,5 +79,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-22T10:36:59Z"
+  "generated_at": "2026-10-22T12:36:26Z"
 }
