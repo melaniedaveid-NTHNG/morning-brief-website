@@ -3,8 +3,9 @@
   "brief": {
     "calendar": [],
     "attention": [
-      "Slack: Hannah Daled asked again how you're doing after a messy situation",
-      "Slack: Hannah Speller's check-in after a difficult day is still unanswered"
+      "Slack: Hannah Daled checked in again asking how you're doing",
+      "Slack: Hannah Speller's check-in after a difficult day is still unanswered",
+      "Email: CityPantry needs your Monday breakfast order by 6:30 AM Monday"
     ]
   },
   "news": {
@@ -78,5 +79,5 @@
       ]
     }
   },
-  "generated_at": "2026-10-23T12:35:23Z"
+  "generated_at": "2026-10-23T20:36:44Z"
 }
