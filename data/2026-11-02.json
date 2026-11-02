@@ -4,7 +4,10 @@
     "calendar": [
       "3:30 PM – Chansey ID Status Check in"
     ],
-    "attention": []
+    "attention": [
+      "Slack: Hannah Speller checked in asking how you're doing after a difficult day, offered her number (still unanswered, from Oct 21)",
+      "Slack: Hannah Daled apologized about something and asked how you're doing (still unanswered, from Oct 22)"
+    ]
   },
   "news": {
     "verge": {
@@ -77,5 +80,5 @@
       ]
     }
   },
-  "generated_at": "2026-11-02T15:18:00Z"
+  "generated_at": "2026-11-02T20:35:56Z"
 }
